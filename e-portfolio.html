@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OJT | E-Portfolio</title>
+  
+  <!-- Google Fonts for typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden; /* Lock the body to prevent any background scroll shifts */
+    }
+
+    body {
+      background-color: #0f1013;
+      color: #f5f5f7;
+      font-family: 'Montserrat', sans-serif;
+      user-select: none;
+    }
+
+    /* Ambient Canvas background & Dust */
+    #dust-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Floating Blurred Polaroids in Background */
+    .bg-polaroids {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-card {
+      position: absolute;
+      width: 180px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      filter: blur(8px);
+      border-radius: 4px;
+      animation: float 28s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(110vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.25;
+      }
+      90% {
+        opacity: 0.25;
+      }
+      100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Main Container (Handles Horizontal Scroll Internally) */
+    .app-container {
+      display: flex;
+      flex-direction: row;
+      width: 100vw;
+      height: 100vh;
+      overflow-y: hidden;
+      overflow-x: auto; /* Scrollbar sits on this container instead of body */
+      position: relative;
+      z-index: 2;
+      scrollbar-width: thin;
+      scrollbar-color: #444 #111;
+      scroll-behavior: smooth;
+    }
+
+    .app-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .app-container::-webkit-scrollbar-track {
+      background: #0f1013;
+    }
+    .app-container::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    /* Section block template */
+    section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Landing Section */
+    .landing-section {
+      width: 100vw;
+      flex-shrink: 0;
+      padding: 0 8%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .landing-content h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .landing-content p {
+      font-size: 1.15rem;
+      color: #a1a1aa;
+      max-width: 550px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .scroll-hint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #71717a;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .scroll-hint:hover {
+      color: #f4f4f5;
+    }
+
+    .scroll-hint svg {
+      animation: nudge 1.5s infinite ease-in-out;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(8px); }
+    }
+
+    /* Gallery Section holding hanging cards */
+    .gallery-section {
+      padding-left: 5vw;
+      padding-right: 15vw;
+      display: flex;
+      gap: 240px; 
+      align-items: flex-start;
+      padding-top: 10vh;
+    }
+
+    /* Hanging Card Wrapper */
+    .hanging-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-origin: top center;
+      animation: sway 5.5s ease-in-out infinite alternate;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Subtle offset animations to make swaying look organic */
+    .hanging-container:nth-child(even) {
+      animation-delay: -1.8s;
+      animation-duration: 6s;
+    }
+    .hanging-container:nth-child(3n) {
+      animation-delay: -3.2s;
+      animation-duration: 5.2s;
+    }
+    .hanging-container:nth-child(4n) {
+      animation-delay: -1.2s;
+      animation-duration: 5.8s;
+    }
+
+    @keyframes sway {
+      0% { transform: rotate(-2.5deg); }
+      100% { transform: rotate(2.5deg); }
+    }
+
+    /* The "Wire" holding the photo */
+    .hanging-wire {
+      width: 2px;
+      height: 150px; /* Cable length from ceiling */
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 100%);
+      position: relative;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Small hook/clip on top of polaroid */
+    .hanging-wire::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      background: #555;
+      border-radius: 50%;
+      border: 2px solid #222;
+    }
+
+    /* Polaroid Styles */
+    .polaroid {
+      width: 380px;  
+      height: 460px; 
+      background-color: #faf9f6;
+      padding: 20px 20px 48px 20px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, opacity 0.4s ease;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .polaroid:hover {
+      transform: scale(1.04);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .polaroid-img {
+      width: 100%;
+      height: 315px; 
+      object-fit: cover;
+      background-color: #ddd;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .polaroid-caption {
+      font-family: 'Architects Daughter', cursive;
+      color: #2b2b2b;
+      font-size: 1.3rem; 
+      text-align: center;
+      margin-top: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Snap / Detach state: Dims the card on the wall while active */
+    .hanging-container.snapped {
+      opacity: 0.15;
+    }
+
+    /* Lightbox Overlay */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(10, 10, 12, 0.94);
+      backdrop-filter: blur(15px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Centered Active Card Wrapper (FIXED POSITIONING RELATIVE TO VIEWPORT) */
+    .lightbox-card-wrapper {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 650px;   
+      height: 780px;  
+      perspective: 1500px;
+      cursor: pointer;
+      opacity: 0;
+      z-index: 105;
+      transform: translate(-50%, -50%) scale(0.85);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+    }
+
+    .lightbox.active .lightbox-card-wrapper {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* The actual 3D flipping card */
+    .flip-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lightbox-card-wrapper.flipped .flip-card {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      top: 0;        /* Add this line */
+      left: 0;       /* Add this line */
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background-color: #faf9f6;
+      border-radius: 4px;
+      padding: 28px;
+      box-shadow: 0 35px 70px rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Front side layout */
+    .card-front {
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    /* Image Wrapper with Slideshow Layout */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 580px; 
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .card-front .zoom-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Navigation Arrows inside the Zoomed Polaroid */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.65);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      z-index: 10;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .carousel-nav:hover {
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    .carousel-nav.prev {
+      left: 15px;
+    }
+
+    .carousel-nav.next {
+      right: 15px;
+    }
+
+    /* Progress Indicators (Dots) */
+    .carousel-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dot.active {
+      background: #ffffff;
+      transform: scale(1.3);
+    }
+
+    .card-front .zoom-caption {
+      font-family: 'Architects Daughter', cursive;
+      color: #2b2b2b;
+      font-size: 1.6rem; 
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    /* Back side layout (Reflection description) */
+    .card-back {
+      transform: rotateY(180deg);
+      color: #2b2b2b;
+      justify-content: space-between;
+      padding: 35px;
+    }
+
+    .card-back h3 {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 1.9rem;
+      border-bottom: 2px dashed #ccc;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card-back p {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 1.25rem;
+      line-height: 1.75;
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    /* Back-side scrollbar styling */
+    .card-back p::-webkit-scrollbar {
+      width: 5px;
+    }
+    .card-back p::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 3px;
+    }
+
+    .card-back-footer {
+      font-size: 0.85rem;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    /* Interactive Instruction Prompts */
+    .instructions {
+      position: fixed; /* Lock to viewport */
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #a1a1aa;
+      font-size: 0.95rem;
+      pointer-events: none;
+      animation: pulse 2s infinite ease-in-out;
+      z-index: 106;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Close Button */
+    .close-btn {
+      position: fixed; /* Lock to viewport */
+      top: 30px;
+      right: 40px;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 1rem;
+      padding: 10px 22px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Montserrat', sans-serif;
+      z-index: 110;
+    }
+
+    .close-btn:hover {
+      background-color: #fff;
+      color: #111;
+      border-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dust Layer Dynamic Canvas -->
+  <canvas id="dust-canvas"></canvas>
+
+  <!-- Blurred Floating Background Polaroids -->
+  <div class="bg-polaroids" id="bg-polaroids"></div>
+
+  <!-- Main Horizontal Scroller App -->
+  <div class="app-container" id="app-container">
+    
+    <!-- 1. LANDING SECTION -->
+    <section class="landing-section" id="landing">
+      <div class="landing-content">
+        <h1>christine elijah<br>PORRAS</h1>
+        <p>Step into my On-the-Job Training at Aksyon Radio. Scroll horizontally, select any hanging picture to detach it, slide through the photo galleries, and click to read my reflections on the day.</p>
+        <div class="scroll-hint" onclick="scrollToGallery()">
+          <span>Explore Journey</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. GALLERY SECTION WITH HANGING CARDS (10 Units) -->
+    <section class="gallery-section" id="gallery">
+
+      <!-- Memory 1 -->
+      <div class="hanging-container" data-index="0">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 0)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=400&q=80" alt="Onboarding Setup">
+          <div class="polaroid-caption">Day One Setup</div>
+        </div>
+      </div>
+
+      <!-- Memory 2 -->
+      <div class="hanging-container" data-index="1">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 1)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80" alt="Codebase Walkthrough">
+          <div class="polaroid-caption">Team Briefing</div>
+        </div>
+      </div>
+
+      <!-- Memory 3 -->
+      <div class="hanging-container" data-index="2">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 2)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="First Contribution">
+          <div class="polaroid-caption">Initial PR Approval</div>
+        </div>
+      </div>
+
+      <!-- Memory 4 -->
+      <div class="hanging-container" data-index="3">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 3)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=400&q=80" alt="Team Standup">
+          <div class="polaroid-caption">Agile Standup</div>
+        </div>
+      </div>
+
+      <!-- Memory 5 -->
+      <div class="hanging-container" data-index="4">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 4)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=400&q=80" alt="Technical Issue">
+          <div class="polaroid-caption">Debugging Stumbling Blocks</div>
+        </div>
+      </div>
+
+      <!-- Memory 6 -->
+      <div class="hanging-container" data-index="5">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 5)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80" alt="Midterm Evaluation">
+          <div class="polaroid-caption">Midterm Progress Assessment</div>
+        </div>
+      </div>
+
+      <!-- Memory 7 -->
+      <div class="hanging-container" data-index="6">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 6)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="System Integrations">
+          <div class="polaroid-caption">Core Integration Task</div>
+        </div>
+      </div>
+
+      <!-- Memory 8 -->
+      <div class="hanging-container" data-index="7">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 7)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" alt="Assurance Run">
+          <div class="polaroid-caption">Unit Testing Checks</div>
+        </div>
+      </div>
+
+      <!-- Memory 9 -->
+      <div class="hanging-container" data-index="8">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 8)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=400&q=80" alt="Intern Sync">
+          <div class="polaroid-caption">Peer Collaboration</div>
+        </div>
+      </div>
+
+      <!-- Memory 10 -->
+      <div class="hanging-container" data-index="9">
+        <div class="hanging-wire"></div>
+        <div class="polaroid" onclick="detachCard(this, 9)">
+          <img class="polaroid-img" src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=400&q=80" alt="Concluding Presentations">
+          <div class="polaroid-caption">Final Project Showcase</div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- LIGHTBOX / INTERACTIVE DETACHED FOCUS AREA -->
+  <div class="lightbox" id="lightbox">
+    <button class="close-btn" onclick="rehangCard()">Hang Back</button>
+    
+    <div class="lightbox-card-wrapper" id="lightbox-card-wrapper" onclick="flipCard(event)">
+      <div class="flip-card">
+        <!-- Front side of zoomed Polaroid -->
+        <div class="card-face card-front">
+          <div class="carousel-container">
+            <!-- Navigation arrows -->
+            <button class="carousel-nav prev" id="carousel-prev" onclick="changeImage(-1, event)">&#10094;</button>
+            <button class="carousel-nav next" id="carousel-next" onclick="changeImage(1, event)">&#10095;</button>
+            
+            <img class="zoom-img" id="zoom-img" src="" alt="Zoomed view">
+            
+            <!-- Indicators / dots -->
+            <div class="carousel-dots" id="carousel-dots"></div>
+          </div>
+          <div class="zoom-caption" id="zoom-caption">Caption text</div>
+        </div>
+        <!-- Back side with journaling & reflections -->
+        <div class="card-face card-back">
+          <h3 id="reflection-title">Day One Setup</h3>
+          <p id="reflection-text">Reflections are loading...</p>
+          <div class="card-back-footer">Click again to view photo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">Use arrows to browse pictures • Click the frame to flip</div>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       1. DATA CONFIGURATION (Your 10 OJT Reflections with Multi-Images)
+       ------------------------------------------------------------- */
+    const ojtData = [
+      {
+        title: "Setting Up My Workspace",
+        caption: "Day One Setup",
+        imgs: [
+          "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "My very first day began with configuring my development environment, getting introduced to the core team members, and obtaining access credentials. Setting up and running my first local server instance was an encouraging kickoff."
+      },
+      {
+        title: "Diving Into the Architecture",
+        caption: "Team Briefing",
+        imgs: [
+          "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "During this session, my lead mentor mapped out the structural repository architecture. I gained deep insights into how data flows across staging and production, which minimized mistakes during subsequent builds."
+      },
+      {
+        title: "My First Live Contribution",
+        caption: "Initial PR Approval",
+        imgs: [
+          "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "I was assigned a lightweight interface update. Walking through my code review and seeing my pull request merged into staging was a pivotal moment. It emphasized why semantic layouts and strict guidelines matter."
+      },
+      {
+        title: "Embracing Team Routines",
+        caption: "Agile Standup",
+        imgs: [
+          "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "We integrated into daily agile check-ins. Keeping updates concise and highlighting blocks helped me understand operational pacing. It developed my ability to communicate roadblocks constructively."
+      },
+      {
+        title: "Confronting Code Roadblocks",
+        caption: "Debugging Stumbling Blocks",
+        imgs: [
+          "https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "I ran into a persistent, hard-to-trace state bug that disrupted page rendering. Working with documentation, utilizing breakpoint inspection tools, and consulting a senior engineer taught me strategic debugging habits."
+      },
+      {
+        title: "Mid-Term Self Assessment",
+        caption: "Midterm Progress Assessment",
+        imgs: [
+          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "Halfway mark! During evaluation, my supervisors provided valuable tips to improve structural code patterns. This gave me clear indicators for refinement heading into the second half of training."
+      },
+      {
+        title: "Implementing Dynamic Integrations",
+        caption: "Core Integration Task",
+        imgs: [
+          "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "I took on the responsibility of mapping complex database outputs to dynamic frontend views. Handling error limits, async loading frames, and response states pushed me to write clean and defensive scripts."
+      },
+      {
+        title: "Testing and Quality Assurance",
+        caption: "Unit Testing Checks",
+        imgs: [
+          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "Quality control is key. I spent this block designing automated tests to protect our components against regression errors. Realizing how unit tests streamline changes changed how I write code."
+      },
+      {
+        title: "Synergy and Brainstorming",
+        caption: "Peer Collaboration",
+        imgs: [
+          "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=crop&w=600&q=80"
+        ],
+        text: "Our team ran a rapid-cycle prototyping session. This project showed me how sharing perspectives and aligning creative ideas early on saves development time and produces a more complete user experience."
+      },
+      {
+        title: "The Project Final Milestone",
+        caption: "Final Project Showcase",
+        imgs: [
+          "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=80",
+          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80"
+        ],
+        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       2. AMBIENT BACKGROUND & DUST LAYER EFFECT
+       ------------------------------------------------------------- */
+    const canvas = document.getElementById('dust-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class DustParticle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height + canvas.height;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedY = -(Math.random() * 0.4 + 0.1);
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        if (this.y < 0) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245, 245, 247, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 70; i++) {
+      particles.push(new DustParticle());
+    }
+
+    function animateDust() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateDust);
+    }
+    animateDust();
+
+    // Spawn Blurred Background floating cards
+    const bgContainer = document.getElementById('bg-polaroids');
+    const bgImages = ojtData.map(item => item.imgs[0]);
+
+    for (let i = 0; i < 8; i++) {
+      const card = document.createElement('div');
+      card.className = 'floating-card';
+      card.style.left = `${Math.random() * 90}%`;
+      card.style.top = `${Math.random() * 90}%`;
+      card.style.animationDelay = `${Math.random() * -20}s`;
+      card.style.animationDuration = `${20 + Math.random() * 15}s`;
+      if (bgImages[i % bgImages.length]) {
+        card.style.backgroundImage = `url(${bgImages[i % bgImages.length]})`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+      }
+      bgContainer.appendChild(card);
+    }
+
+    /* -------------------------------------------------------------
+       3. INTERACTIVE NAVIGATION & HORIZONTAL SCROLLING
+       ------------------------------------------------------------- */
+    function scrollToGallery() {
+      const gallery = document.getElementById('gallery');
+      gallery.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    }
+
+    // Scroll horizontally using mouse wheel over viewport (UPDATED TO SCROLL APP-CONTAINER DIRECTLY)
+    const appContainer = document.getElementById('app-container');
+    window.addEventListener('wheel', (evt) => {
+      if (document.getElementById('lightbox').classList.contains('active')) return;
+      
+      evt.preventDefault();
+      appContainer.scrollLeft += evt.deltaY;
+    }, { passive: false });
+
+    /* -------------------------------------------------------------
+       4. INTERACTIVE PHOTO DETACHING, SLIDESHOW & FLIPPING
+       ------------------------------------------------------------- */
+    let currentActiveIndex = null;
+    let currentImageIndex = 0;
+    let clickedContainer = null;
+
+    function detachCard(cardElement, index) {
+      clickedContainer = cardElement.closest('.hanging-container');
+      currentActiveIndex = index;
+      currentImageIndex = 0; // Reset to first photo whenever a card is opened
+
+      // Dim hanging card slightly on wire
+      clickedContainer.classList.add('snapped');
+
+      // Populate content into overlay lightbox
+      populateCardData();
+
+      // Launch lightbox card interface
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function populateCardData() {
+      const data = ojtData[currentActiveIndex];
+      const activeImgUrl = data.imgs[currentImageIndex];
+
+      // Update image and textual details
+      document.getElementById('zoom-img').src = activeImgUrl;
+      document.getElementById('zoom-caption').innerText = data.caption;
+      document.getElementById('reflection-title').innerText = data.title;
+      document.getElementById('reflection-text').innerText = data.text;
+
+      // Handle slideshow controls visibility
+      const prevBtn = document.getElementById('carousel-prev');
+      const nextBtn = document.getElementById('carousel-next');
+      const dotsContainer = document.getElementById('carousel-dots');
+
+      dotsContainer.innerHTML = ''; // Reset dot markers
+
+      if (data.imgs.length > 1) {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+
+        // Recreate dot structure based on active image list size
+        data.imgs.forEach((_, idx) => {
+          const dot = document.createElement('div');
+          dot.className = `dot ${idx === currentImageIndex ? 'active' : ''}`;
+          dotsContainer.appendChild(dot);
+        });
+      } else {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+    }
+
+    // Change slideshow image index
+    function changeImage(direction, event) {
+      event.stopPropagation(); // Prevents flipping the card when arrows are clicked
+      
+      const data = ojtData[currentActiveIndex];
+      const totalImages = data.imgs.length;
+
+      // Wrap around logic
+      currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
+
+      // Apply transition fade out and refresh image
+      const imgElement = document.getElementById('zoom-img');
+      imgElement.style.opacity = '0';
+      
+      setTimeout(() => {
+        imgElement.src = data.imgs[currentImageIndex];
+        imgElement.style.opacity = '1';
+        
+        // Update visual dot markers status
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((dot, idx) => {
+          if (idx === currentImageIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }, 150);
+    }
+
+    function flipCard(event) {
+      // Avoid flipping if you click navigation controls or close button
+      if (
+        event.target.classList.contains('carousel-nav') || 
+        event.target.classList.contains('close-btn')
+      ) return;
+      
+      const wrapper = document.getElementById('lightbox-card-wrapper');
+      wrapper.classList.toggle('flipped');
+    }
+
+    function rehangCard() {
+      document.getElementById('lightbox').classList.remove('active');
+      
+      setTimeout(() => {
+        document.getElementById('lightbox-card-wrapper').classList.remove('flipped');
+        
+        // Restore card back to wire after lightbox closes
+        if (clickedContainer) {
+          clickedContainer.classList.remove('snapped');
+        }
+      }, 400);
+    }
+  </script>
+</body>
+</html>
