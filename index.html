@@ -21,7 +21,7 @@
     html, body {
       height: 100vh;
       width: 100vw;
-      overflow: hidden; /* Lock the body to prevent any background scroll shifts */
+      overflow: hidden; /* Lock body to prevent any background scroll shifts */
     }
 
     body {
@@ -70,26 +70,22 @@
         transform: translateY(110vh) rotate(0deg);
         opacity: 0;
       }
-      10% {
-        opacity: 0.25;
-      }
-      90% {
-        opacity: 0.25;
-      }
+      10% { opacity: 0.25; }
+      90% { opacity: 0.25; }
       100% {
         transform: translateY(-20vh) rotate(360deg);
         opacity: 0;
       }
     }
 
-    /* Main Container (Handles Horizontal Scroll Internally) */
+    /* Main App Horizontal Container */
     .app-container {
       display: flex;
       flex-direction: row;
       width: 100vw;
       height: 100vh;
       overflow-y: hidden;
-      overflow-x: auto; /* Scrollbar sits on this container instead of body */
+      overflow-x: auto;
       position: relative;
       z-index: 2;
       scrollbar-width: thin;
@@ -108,23 +104,42 @@
       border-radius: 4px;
     }
 
+    /* --- Vertical Stack Wrapper (Landing + Reels) --- */
+    .vertical-stack {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      flex-shrink: 0;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none; 
+      -ms-overflow-style: none;
+    }
+    .vertical-stack::-webkit-scrollbar {
+      display: none; 
+    }
+
     /* Section block template */
     section {
       height: 100vh;
       display: flex;
       align-items: center;
       position: relative;
+      scroll-snap-align: start;
     }
 
     /* Landing Section */
     .landing-section {
-      width: 100vw;
-      flex-shrink: 0;
+      width: 100%;
+      height: 100vh;
       padding: 0 8%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       z-index: 3;
+      box-sizing: border-box;
+      background: #0f1013;
     }
 
     .landing-content h1 {
@@ -146,6 +161,11 @@
       margin-bottom: 2.5rem;
     }
 
+    .nav-hints-container {
+      display: flex;
+      gap: 32px;
+    }
+
     .scroll-hint {
       display: flex;
       align-items: center;
@@ -160,26 +180,153 @@
       color: #f4f4f5;
     }
 
-    .scroll-hint svg {
-      animation: nudge 1.5s infinite ease-in-out;
+    .scroll-hint.down svg {
+      animation: nudgeDown 1.5s infinite ease-in-out;
     }
 
-    @keyframes nudge {
+    .scroll-hint.right svg {
+      animation: nudgeRight 1.5s infinite ease-in-out;
+    }
+
+    @keyframes nudgeDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    @keyframes nudgeRight {
       0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(8px); }
+      50% { transform: translateX(6px); }
     }
 
-    /* Gallery Section holding hanging cards */
+    /* --- REELS SECTION --- */
+    .reels-page-section {
+      width: 100%;
+      height: 100vh;
+      padding: 20px 20px 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      box-sizing: border-box;
+      z-index: 3;
+      background: #0f1013;
+    }
+
+    .reels-header {
+      text-align: center;
+      margin-bottom: 14px;
+      max-width: 600px;
+      z-index: 5;
+    }
+
+    .reels-header h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .reels-header p {
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      line-height: 1.4;
+    }
+
+    .reels-deck {
+      width: 460px;
+      max-width: 92vw;
+      height: calc(100vh - 130px);
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 0 4px 20px 4px;
+      scroll-snap-type: y mandatory;
+      box-sizing: border-box;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .reels-deck::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* FB REEL CARD (METHOD 1 IFRAME CONTAINER) */
+    .reel-unit {
+      width: 100%;
+      height: calc(100vh - 150px);
+      max-height: 750px;
+      flex-shrink: 0;
+      scroll-snap-align: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .reel-unit:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .reel-video-box {
+      width: 100%;
+      flex: 1;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .reel-video-box iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .reel-caption-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2px 6px;
+    }
+
+    .reel-caption-box h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .reel-caption-box p {
+      font-size: 0.82rem;
+      color: #a1a1aa;
+      line-height: 1.35;
+    }
+
+    /* --- GALLERY SECTION (HANGING CARDS) --- */
     .gallery-section {
-      padding-left: 5vw;
+      padding-left: 10vw;
       padding-right: 15vw;
       display: flex;
       gap: 240px; 
       align-items: flex-start;
       padding-top: 10vh;
+      flex-shrink: 0;
     }
 
-    /* Hanging Card Wrapper */
     .hanging-container {
       position: relative;
       display: flex;
@@ -190,7 +337,6 @@
       transition: opacity 0.4s ease;
     }
 
-    /* Subtle offset animations to make swaying look organic */
     .hanging-container:nth-child(even) {
       animation-delay: -1.8s;
       animation-duration: 6s;
@@ -209,16 +355,14 @@
       100% { transform: rotate(2.5deg); }
     }
 
-    /* The "Wire" holding the photo */
     .hanging-wire {
       width: 2px;
-      height: 150px; /* Cable length from ceiling */
+      height: 150px;
       background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 100%);
       position: relative;
       transition: opacity 0.4s ease;
     }
 
-    /* Small hook/clip on top of polaroid */
     .hanging-wire::after {
       content: '';
       position: absolute;
@@ -232,7 +376,6 @@
       border: 2px solid #222;
     }
 
-    /* Polaroid Styles */
     .polaroid {
       width: 380px;  
       height: 460px; 
@@ -270,7 +413,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Snap / Detach state: Dims the card on the wall while active */
     .hanging-container.snapped {
       opacity: 0.15;
     }
@@ -295,7 +437,6 @@
       pointer-events: auto;
     }
 
-    /* Centered Active Card Wrapper (FIXED POSITIONING RELATIVE TO VIEWPORT) */
     .lightbox-card-wrapper {
       position: fixed;
       top: 50%;
@@ -315,7 +456,6 @@
       transform: translate(-50%, -50%) scale(1);
     }
 
-    /* The actual 3D flipping card */
     .flip-card {
       width: 100%;
       height: 100%;
@@ -330,8 +470,8 @@
 
     .card-face {
       position: absolute;
-      top: 0;        /* Add this line */
-      left: 0;       /* Add this line */
+      top: 0;        
+      left: 0;       
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
@@ -343,13 +483,11 @@
       flex-direction: column;
     }
 
-    /* Front side layout */
     .card-front {
       justify-content: flex-start;
       position: relative;
     }
 
-    /* Image Wrapper with Slideshow Layout */
     .carousel-container {
       position: relative;
       width: 100%;
@@ -365,7 +503,6 @@
       transition: opacity 0.3s ease;
     }
 
-    /* Navigation Arrows inside the Zoomed Polaroid */
     .carousel-nav {
       position: absolute;
       top: 50%;
@@ -382,22 +519,16 @@
       justify-content: center;
       font-size: 1.4rem;
       z-index: 10;
-      transition: background 0.2s, opacity 0.2s;
+      transition: background 0.2s;
     }
 
     .carousel-nav:hover {
       background: rgba(0, 0, 0, 0.85);
     }
 
-    .carousel-nav.prev {
-      left: 15px;
-    }
+    .carousel-nav.prev { left: 15px; }
+    .carousel-nav.next { right: 15px; }
 
-    .carousel-nav.next {
-      right: 15px;
-    }
-
-    /* Progress Indicators (Dots) */
     .carousel-dots {
       position: absolute;
       bottom: 16px;
@@ -429,7 +560,6 @@
       margin-top: 20px;
     }
 
-    /* Back side layout (Reflection description) */
     .card-back {
       transform: rotateY(180deg);
       color: #2b2b2b;
@@ -454,15 +584,6 @@
       padding-right: 8px;
     }
 
-    /* Back-side scrollbar styling */
-    .card-back p::-webkit-scrollbar {
-      width: 5px;
-    }
-    .card-back p::-webkit-scrollbar-thumb {
-      background: #ddd;
-      border-radius: 3px;
-    }
-
     .card-back-footer {
       font-size: 0.85rem;
       color: #777;
@@ -472,9 +593,8 @@
       margin-top: 20px;
     }
 
-    /* Interactive Instruction Prompts */
     .instructions {
-      position: fixed; /* Lock to viewport */
+      position: fixed;
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
@@ -491,9 +611,8 @@
       50% { opacity: 1; }
     }
 
-    /* Close Button */
     .close-btn {
-      position: fixed; /* Lock to viewport */
+      position: fixed;
       top: 30px;
       right: 40px;
       background: none;
@@ -526,24 +645,47 @@
   <!-- Main Horizontal Scroller App -->
   <div class="app-container" id="app-container">
     
-    <!-- 1. LANDING SECTION -->
-    <section class="landing-section" id="landing">
-      <div class="landing-content">
-        <h1>christine elijah<br>PORRAS</h1>
-        <p>Step into my On-the-Job Training at Aksyon Radio. Scroll horizontally, select any hanging picture to detach it, slide through the photo galleries, and click to read my reflections on the day.</p>
-        <div class="scroll-hint" onclick="scrollToGallery()">
-          <span>Explore Journey</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+    <!-- LEFT SIDE VIEWPORT STACK (Landing + Reels) -->
+    <div class="vertical-stack" id="vertical-stack">
+      
+      <!-- 1. LANDING SCREEN -->
+      <section class="landing-section" id="landing">
+        <div class="landing-content">
+          <h1>christine elijah<br>PORRAS</h1>
+          <p>Explore my On-the-Job Training journey at Aksyon Radio. Scroll down to view broadcast reels, or scroll right to enter the photo diary gallery.</p>
+        <!---  <div class="nav-hints-container">
+            <div class="scroll-hint down" onclick="scrollToReels()">
+              <span>Click to Reels</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7" />
+              </svg>
+            </div> --->
+            <div class="scroll-hint right" onclick="scrollToGallery()"> 
+              <span>Go to Photo Gallery</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 2. GALLERY SECTION WITH HANGING CARDS (10 Units) -->
+      <!-- 2. REELS HUB (Method 1: Dynamic Iframe Deck) 
+      <section class="reels-page-section" id="reels">
+        <div class="reels-header">
+          <h2>Aksyon Radio Reels</h2>
+          <p>Scroll vertically inside the deck to watch broadcast captures, audio mixes, and active studio logs recorded throughout my internship schedule.</p>
+        </div>
+
+        Dynamic Container where JS renders Method 1 Facebook IFrames 
+        <div class="reels-deck" id="reels-deck"></div>
+      </section>
+
+    </div> -->
+    <!-- 3. GALLERY SECTION WITH HANGING CARDS (24 Units) -->
     <section class="gallery-section" id="gallery">
 
-      <!-- Day 0 -->
+      <!-- Days 0 to 23 -->
       <div class="hanging-container" data-index="0">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 0)">
@@ -552,7 +694,6 @@
         </div>
       </div>
 
-      <!-- Day 1 -->
       <div class="hanging-container" data-index="1">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 1)">
@@ -561,7 +702,6 @@
         </div>
       </div>
 
-      <!-- Day 2 -->
       <div class="hanging-container" data-index="2">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 2)">
@@ -570,7 +710,6 @@
         </div>
       </div>
 
-      <!-- Day 3 -->
       <div class="hanging-container" data-index="3">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 3)">
@@ -579,7 +718,6 @@
         </div>
       </div>
 
-      <!-- Day 4-->
       <div class="hanging-container" data-index="4">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 4)">
@@ -588,7 +726,6 @@
         </div>
       </div>
 
-      <!-- Day 5 -->
       <div class="hanging-container" data-index="5">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 5)">
@@ -597,16 +734,14 @@
         </div>
       </div>
 
-      <!-- Day 6 -->
       <div class="hanging-container" data-index="6">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 6)">
-          <img class="polaroid-img" src="assets/6/IMG_9404.jpg">
+          <img class="polaroid-img" src="assets/6/IMG_3876.PNG">
           <div class="polaroid-caption">Day 6: </div>
         </div>
       </div>
 
-      <!-- Day 7 -->
       <div class="hanging-container" data-index="7">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 7)">
@@ -615,7 +750,6 @@
         </div>
       </div>
 
-      <!-- Day 8 -->
       <div class="hanging-container" data-index="8">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 8)">
@@ -624,7 +758,6 @@
         </div>
       </div>
 
-      <!-- Day 9 -->
       <div class="hanging-container" data-index="9">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 9)">
@@ -633,8 +766,7 @@
         </div>
       </div>
 
-        <!-- Day 10 -->
-       <div class="hanging-container" data-index="10">
+      <div class="hanging-container" data-index="10">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 10)">
           <img class="polaroid-img" src="assets/10/IMG_4058.PNG">
@@ -642,8 +774,7 @@
         </div>
       </div>
 
-      <!-- Day 11 -->
-       <div class="hanging-container" data-index="11">
+      <div class="hanging-container" data-index="11">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 11)">
           <img class="polaroid-img" src="assets/11/IMG_4043.PNG">
@@ -651,8 +782,7 @@
         </div>
       </div>
 
-      <!-- Day 12 -->
-       <div class="hanging-container" data-index="12">
+      <div class="hanging-container" data-index="12">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 12)">
           <img class="polaroid-img" src="assets/12/IMG_0479.jpg">
@@ -660,9 +790,7 @@
         </div>
       </div>
 
-
-      <!-- Day 13 -->
-       <div class="hanging-container" data-index="13">
+      <div class="hanging-container" data-index="13">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 13)">
           <img class="polaroid-img" src="assets/13/IMG_0591.jpg">
@@ -670,8 +798,7 @@
         </div>
       </div>
 
-      <!-- Day 14 -->
-       <div class="hanging-container" data-index="14">
+      <div class="hanging-container" data-index="14">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 14)">
           <img class="polaroid-img" src="assets/14/IMG_0691.jpg">
@@ -679,9 +806,7 @@
         </div>
       </div>
 
-
-    <!-- Day 15 -->
-       <div class="hanging-container" data-index="15">
+      <div class="hanging-container" data-index="15">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 15)">
           <img class="polaroid-img" src="assets/15/IMG_0836.jpg">
@@ -689,8 +814,7 @@
         </div>
       </div>
 
-      <!-- Day 16 -->
-       <div class="hanging-container" data-index="16">
+      <div class="hanging-container" data-index="16">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 16)">
           <img class="polaroid-img" src="assets/16/IMG_2233.jpg">
@@ -698,8 +822,7 @@
         </div>
       </div>
 
-      <!-- Day 17 -->
-       <div class="hanging-container" data-index="17">
+      <div class="hanging-container" data-index="17">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 17)">
           <img class="polaroid-img" src="assets/17/IMG_4054.PNG">
@@ -707,8 +830,7 @@
         </div>
       </div>
 
-      <!-- Day 18 -->
-       <div class="hanging-container" data-index="18">
+      <div class="hanging-container" data-index="18">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 18)">
           <img class="polaroid-img" src="assets/18/IMG_1513.PNG">
@@ -716,8 +838,7 @@
         </div>
       </div>
 
-      <!-- Day 19 -->
-       <div class="hanging-container" data-index="19">
+      <div class="hanging-container" data-index="19">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 19)">
           <img class="polaroid-img" src="assets/19/IMG_1780.jpg">
@@ -725,8 +846,7 @@
         </div>
       </div>
 
-      <!-- Day 20 -->
-       <div class="hanging-container" data-index="20">
+      <div class="hanging-container" data-index="20">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 20)">
           <img class="polaroid-img" src="assets/20/IMG_8938.jpg">
@@ -734,8 +854,7 @@
         </div>
       </div>
 
-      <!-- Day 21 -->
-       <div class="hanging-container" data-index="21">
+      <div class="hanging-container" data-index="21">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 21)">
           <img class="polaroid-img" src="assets/21/IMG_2195.jpg">
@@ -743,8 +862,7 @@
         </div>
       </div>
 
-      <!-- Day 22 -->
-       <div class="hanging-container" data-index="22">
+      <div class="hanging-container" data-index="22">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 22)">
           <img class="polaroid-img" src="assets/22/IMG_2372.jpg">
@@ -752,8 +870,7 @@
         </div>
       </div>
 
-      <!-- Day 23 -->
-       <div class="hanging-container" data-index="23">
+      <div class="hanging-container" data-index="23">
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 23)">
           <img class="polaroid-img" src="assets/23/IMG_4057.PNG">
@@ -770,21 +887,17 @@
     
     <div class="lightbox-card-wrapper" id="lightbox-card-wrapper" onclick="flipCard(event)">
       <div class="flip-card">
-        <!-- Front side of zoomed Polaroid -->
         <div class="card-face card-front">
           <div class="carousel-container">
-            <!-- Navigation arrows -->
             <button class="carousel-nav prev" id="carousel-prev" onclick="changeImage(-1, event)">&#10094;</button>
             <button class="carousel-nav next" id="carousel-next" onclick="changeImage(1, event)">&#10095;</button>
             
             <img class="zoom-img" id="zoom-img" src="" alt="Zoomed view">
             
-            <!-- Indicators / dots -->
             <div class="carousel-dots" id="carousel-dots"></div>
           </div>
           <div class="zoom-caption" id="zoom-caption">Caption text</div>
         </div>
-        <!-- Back side with journaling & reflections -->
         <div class="card-face card-back">
           <h3 id="reflection-title">OJT</h3>
           <p id="reflection-text">Reflections are loading...</p>
@@ -798,253 +911,246 @@
 
   <script>
     /* -------------------------------------------------------------
-       1. DATA CONFIGURATION (Your 10 OJT Reflections with Multi-Images)
+       METHOD 1: FACEBOOK REELS DATASET
+       (Replace 'fbUrl' with your exact FB Reel plugin iframe URLs)
+       ------------------------------------------------------------- */
+   /* const reelsData = [
+      {
+        title: "01 | Morning Program Sync",
+        desc: "Evaluating master console outputs and adjusting slider configurations during live radio slots.",
+        fbUrl: "https://www.facebook.com/reel/2109421896622840"
+      },
+      {
+        title: "02 | Aux Line Configuration",
+        desc: "Conducting path tests and establishing auxiliary links with on-scene field reporters.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1339038084566658%2F&show_text=false&width=267&t=0"
+      },
+      {
+        title: "03 | Ad Segment Insertion",
+        desc: "Sequencing ad blocks and station IDs under programmed schedule structures.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "04 | Studio Microphone Setup",
+        desc: "Arranging omnidirectional mic paths and executing phase tests for guest speakers.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "05 | Sound Card Routing",
+        desc: "Evaluating signal interfaces and setting latency steps to keep remote report delays minimal.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "06 | Mixing Console Diagnostics",
+        desc: "Running daily diagnostics on fader responses and identifying sound bleed profiles.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "07 | Live Feed Monitoring",
+        desc: "Analyzing decibel fluctuations on secondary feeds to prevent signal distortion clips.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "08 | Digital Cart Player Operation",
+        desc: "Loading media tags and sequencing music transitions during standard station blocks.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "09 | Emergency Broadcast Testing",
+        desc: "Reviewing priority backup routes and checking system status for urgent alerts.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      },
+      {
+        title: "10 | Studio Wrap Up Check",
+        desc: "Shutting auxiliary paths down and resetting default program logs for afternoon teams.",
+        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
+      }
+    ];
+
+    // Helper function to auto-format standard FB links into iframe embed links
+    function formatFbEmbedUrl(url) {
+      // If it's already an embed plugin link, return it directly
+      if (url.includes('facebook.com/plugins/video.php')) {
+        return url;
+      }
+      // Otherwise, construct the official embed URL dynamically
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
+    }
+
+    // Render Method 1 FB Reel IFrames
+    function renderReels() {
+      const reelsDeck = document.getElementById('reels-deck');
+      if (!reelsDeck) return;
+
+      reelsDeck.innerHTML = reelsData.map((reel) => `
+        <div class="reel-unit">
+          <div class="reel-video-box">
+            <iframe 
+              src="${formatFbEmbedUrl(reel.fbUrl)}" 
+              scrolling="no" 
+              frameborder="0" 
+              allowfullscreen="true" 
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+            </iframe>
+          </div>
+          <div class="reel-caption-box">
+            <h4>${reel.title}</h4>
+            <p>${reel.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', renderReels);
+   
+*/
+    /* -------------------------------------------------------------
+       1. DATA CONFIGURATION (Your 24 OJT Reflections)
        ------------------------------------------------------------- */
     const ojtData = [
       {
         title: "Reflection Title",
         caption: "Day 0: ",
-        imgs: [
-          "assets/0/IMG_8375.jpg",
-          "assets/0/IMG_8388.jpg",
-          "assets/0/IMG_8392.jpg"
-        ],
+        imgs: ["assets/0/IMG_8375.jpg", "assets/0/IMG_8388.jpg", "assets/0/IMG_8392.jpg"],
         text: "Reflection Description"
       },
       {
         title: "Diving Into the Architecture",
         caption: "Day 1: ",
-        imgs: [
-          "assets/1/IMG_8786.jpg",
-          "assets/1/IMG_8750.jpg",
-          "assets/1/IMG_8723.jpg"
-        ],
+        imgs: ["assets/1/IMG_8786.jpg", "assets/1/IMG_8750.jpg", "assets/1/IMG_8723.jpg"],
         text: "During this session, my lead mentor mapped out the structural repository architecture. I gained deep insights into how data flows across staging and production, which minimized mistakes during subsequent builds."
       },
       {
         title: "My First Live Contribution",
         caption: "Day 2:",
-        imgs: [
-          "assets/2/IMG_8828.jpg",
-          "assets/2/IMG_8852.jpg",
-          "assets/2/IMG_8855.jpg"
-        ],
+        imgs: ["assets/2/IMG_8828.jpg", "assets/2/IMG_8852.jpg", "assets/2/IMG_8855.jpg"],
         text: "I was assigned a lightweight interface update. Walking through my code review and seeing my pull request merged into staging was a pivotal moment. It emphasized why semantic layouts and strict guidelines matter."
       },
       {
         title: "Embracing Team Routines",
         caption: "Day 3:",
-        imgs: [
-          "assets/3/IMG_8966.jpg",
-          "assets/3/IMG_8960.jpg",
-          "assets/3/IMG_8979.jpg",
-          "assets/3/IMG_8988.jpg"
-        ],
+        imgs: ["assets/3/IMG_8966.jpg", "assets/3/IMG_8960.jpg", "assets/3/IMG_8979.jpg", "assets/3/IMG_8988.jpg"],
         text: "We integrated into daily agile check-ins. Keeping updates concise and highlighting blocks helped me understand operational pacing. It developed my ability to communicate roadblocks constructively."
       },
       {
         title: "Confronting Code Roadblocks",
         caption: "Day 4:",
-        imgs: [
-          "assets/4/IMG_9027.jpg",
-          "assets/4/IMG_9046.jpg",
-          "assets/4/Screenshot 2026-08-01 231518.png"
-        ],
+        imgs: ["assets/4/IMG_9027.jpg", "assets/4/IMG_9046.jpg", "assets/4/Screenshot 2026-08-01 231518.png"],
         text: "I ran into a persistent, hard-to-trace state bug that disrupted page rendering. Working with documentation, utilizing breakpoint inspection tools, and consulting a senior engineer taught me strategic debugging habits."
       },
       {
         title: "Mid-Term Self Assessment",
         caption: "Day 5:",
-        imgs: [
-         "assets/5/IMG_4030.PNG",
-         "assets/5/IMG_9111.jpg",
-         "assets/5/IMG_9118.PNG"
-        ],
+        imgs: ["assets/5/IMG_4030.PNG", "assets/5/IMG_9111.jpg", "assets/5/IMG_9118.PNG"],
         text: "Halfway mark! During evaluation, my supervisors provided valuable tips to improve structural code patterns. This gave me clear indicators for refinement heading into the second half of training."
       },
       {
         title: "Implementing Dynamic Integrations",
         caption: "Day 6: ",
-        imgs: [
-          "assets/6/IMG_3876.PNG",
-          "assets/6/IMG_3877.PNG",
-          "assets/6/IMG_9404.jpg"
-        ],
+        imgs: ["assets/6/IMG_3876.PNG", "assets/6/IMG_3877.PNG", "assets/6/IMG_9404.jpg"],
         text: "I took on the responsibility of mapping complex database outputs to dynamic frontend views. Handling error limits, async loading frames, and response states pushed me to write clean and defensive scripts."
       },
       {
         title: "Testing and Quality Assurance",
         caption: "Day 7: ",
-        imgs: [
-         "assets/7/IMG_9498.jpg",
-         "assets/7/IMG_3869.PNG",
-         "assets/7/IMG_3870.PNG",
-         "assets/7/IMG_3871.PNG",
-         "assets/7/IMG_4032.PNG",
-         "assets/7/IMG_4038.PNG"
-        ],
+        imgs: ["assets/7/IMG_9498.jpg", "assets/7/IMG_3869.PNG", "assets/7/IMG_3870.PNG", "assets/7/IMG_3871.PNG", "assets/7/IMG_4032.PNG", "assets/7/IMG_4038.PNG"],
         text: "Quality control is key. I spent this block designing automated tests to protect our components against regression errors. Realizing how unit tests streamline changes changed how I write code."
       },
       {
         title: "Synergy and Brainstorming",
         caption: "Day 8: ",
-        imgs: [
-          "assets/8/IMG_9446.jpg",
-          "assets/8/IMG_9451.jpg",
-        ],
+        imgs: ["assets/8/IMG_9446.jpg", "assets/8/IMG_9451.jpg"],
         text: "Our team ran a rapid-cycle prototyping session. This project showed me how sharing perspectives and aligning creative ideas early on saves development time and produces a more complete user experience."
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 9: ",
-        imgs: [
-         "assets/9/IMG_4039.PNG",
-          "assets/9/IMG_3865.PNG",
-           "assets/9/IMG_4040.jpg"
-        ],
+        imgs: ["assets/9/IMG_4039.PNG", "assets/9/IMG_3865.PNG", "assets/9/IMG_4040.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 10: ",
-        imgs: [
-           "assets/10/IMG_4058.PNG",
-            "assets/10/IMG_4056.PNG"
-        ],
+        imgs: ["assets/10/IMG_4058.PNG", "assets/10/IMG_4056.PNG"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 11: ",
-        imgs: [
-           "assets/11/IMG_4043.PNG",
-            "assets/11/IMG_4045.PNG",
-             "assets/11/IMG_9950.jpg",
-              "assets/11/IMG_9969.jpg",
-               "assets/11/IMG_9954.jpg"
-        ],
+        imgs: ["assets/11/IMG_4043.PNG", "assets/11/IMG_4045.PNG", "assets/11/IMG_9950.jpg", "assets/11/IMG_9969.jpg", "assets/11/IMG_9954.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 12: ",
-        imgs: [
-           "assets/12/IMG_0479.jpg",
-            "assets/12/IMG_4046.PNG",
-             "assets/12/IMG_4047.PNG",
-              "assets/12/IMG_0484.jpg"
-        ],
+        imgs: ["assets/12/IMG_0479.jpg", "assets/12/IMG_4046.PNG", "assets/12/IMG_4047.PNG", "assets/12/IMG_0484.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 13: ",
-        imgs: [
-           "assets/13/IMG_0591.jpg",
-            "assets/13/IMG_4049.PNG",
-             "assets/13/IMG_4050.PNG",
-              "assets/13/IMG_0592.jpg"
-        ],
+        imgs: ["assets/13/IMG_0591.jpg", "assets/13/IMG_4049.PNG", "assets/13/IMG_4050.PNG", "assets/13/IMG_0592.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 14: ",
-        imgs: [
-          "assets/14/IMG_0691.jpg",
-           "assets/14/IMG_8509.jpg",
-            "assets/14/IMG_0688.jpg"
-
-        ],
+        imgs: ["assets/14/IMG_0691.jpg", "assets/14/IMG_8509.jpg", "assets/14/IMG_0688.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 15: ",
-        imgs: [
-           "assets/15/IMG_0836.jpg",
-            "assets/15/IMG_0881.jpg",
-             "assets/15/IMG_0860.jpg"
-        ],
+        imgs: ["assets/15/IMG_0836.jpg", "assets/15/IMG_0881.jpg", "assets/15/IMG_0860.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 16: ",
-        imgs: [
-           "assets/16/IMG_2233.jpg",
-            "assets/16/IMG_1135.jpg"
-        ],
+        imgs: ["assets/16/IMG_2233.jpg", "assets/16/IMG_1135.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 17: ",
-        imgs: [
-          "assets/17/IMG_4054.PNG",
-           "assets/17/IMG_4053.PNG",
-            "assets/17/IMG_1216.jpg"
-        ],
+        imgs: ["assets/17/IMG_4054.PNG", "assets/17/IMG_4053.PNG", "assets/17/IMG_1216.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 18: ",
-        imgs: [
-           "assets/18/IMG_1513.PNG",
-            "assets/18/IMG_1500.jpg"
-        ],
+        imgs: ["assets/18/IMG_1513.PNG", "assets/18/IMG_1500.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 19: ",
-        imgs: [
-          "assets/8/IMG_1780.jpg",
-           "assets/8/IMG_1777.jpg"
-        ],
+        imgs: ["assets/19/IMG_1780.jpg", "assets/19/IMG_1777.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 20: ",
-        imgs: [
-         "assets/20/IMG_8938.jpg",
-          "assets/20/IMG_1798.jpg",
-           "assets/20/IMG_1848.jpg",
-            "assets/20/IMG_8934.jpg"
-        ],
+        imgs: ["assets/20/IMG_8938.jpg", "assets/20/IMG_1798.jpg", "assets/20/IMG_1848.jpg", "assets/20/IMG_8934.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 21: ",
-        imgs: [
-           "assets/8/IMG_2195.jpg",
-            "assets/8/IMG_2145.jpg",
-             "assets/8/IMG_2101.jpg",
-              "assets/8/IMG_2215.jpg"
-        ],
+        imgs: ["assets/21/IMG_2195.jpg", "assets/21/IMG_2145.jpg", "assets/21/IMG_2101.jpg", "assets/21/IMG_2215.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 22: ",
-        imgs: [
-           "assets/22/IMG_2372.jpg",
-            "assets/22/IMG_2363.jpg",
-            "assets/22/IMG_2387.jpg"
-        ],
+        imgs: ["assets/22/IMG_2372.jpg", "assets/22/IMG_2363.jpg", "assets/22/IMG_2387.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       },
       {
         title: "The Project Final Milestone",
         caption: "Day 23: ",
-        imgs: [
-           "assets/23/IMG_4057.jpg",
-            "assets/23/IMG_2530.jpg",
-             "assets/23/IMG_2506.jpg"
-        ],
+        imgs: ["assets/23/IMG_4057.PNG", "assets/23/IMG_2530.jpg", "assets/23/IMG_2506.jpg"],
         text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
       }
     ];
@@ -1124,26 +1230,66 @@
     }
 
     /* -------------------------------------------------------------
-       3. INTERACTIVE NAVIGATION & HORIZONTAL SCROLLING
+       3. NAVIGATION & CONDITIONAL SCROLL MANAGEMENT
        ------------------------------------------------------------- */
+    const verticalStack = document.getElementById('vertical-stack');
+    const appContainer = document.getElementById('app-container');
+
+    function scrollToReels() {
+      const reelsSection = document.getElementById('reels');
+      reelsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
     function scrollToGallery() {
       const gallery = document.getElementById('gallery');
       gallery.scrollIntoView({ behavior: 'smooth', inline: 'start' });
     }
 
-// Scroll horizontally using mouse wheel or trackpad
-    const appContainer = document.getElementById('app-container');
+    // Wheel Event Router: Handles smooth mouse scroll and prevents lockups
     window.addEventListener('wheel', (evt) => {
-      // Don't scroll if a photo is opened
       if (document.getElementById('lightbox').classList.contains('active')) return;
-      
-      // If the scroll is mostly vertical (standard mouse wheel), convert it to horizontal
-      if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
-        evt.preventDefault();
-        appContainer.scrollLeft += evt.deltaY;
+
+      const isInsideDeck = evt.target.closest('#reels-deck');
+      const isOverStack = evt.target.closest('#vertical-stack');
+
+      if (isInsideDeck) {
+        const deck = evt.target.closest('#reels-deck');
+        const isDeckAtBottom = Math.ceil(deck.scrollTop + deck.clientHeight) >= (deck.scrollHeight - 5);
+        const isDeckAtTop = deck.scrollTop === 0;
+
+        if (evt.deltaY > 0 && isDeckAtBottom) {
+          evt.preventDefault();
+        } else if (evt.deltaY < 0 && isDeckAtTop) {
+          verticalStack.scrollTop += evt.deltaY;
+          evt.preventDefault();
+        }
+        return;
       }
-      // If the scroll is mostly horizontal (two-finger trackpad swipe), do nothing 
-      // and let the browser's incredibly smooth native scrolling take over!
+
+      if (isOverStack) {
+        const isAtLanding = verticalStack.scrollTop < (window.innerHeight * 0.4);
+
+        if (isAtLanding) {
+          if (Math.abs(evt.deltaX) > Math.abs(evt.deltaY)) {
+            appContainer.scrollLeft += evt.deltaX;
+          } else if (evt.deltaY > 0) {
+            verticalStack.scrollTop += evt.deltaY;
+            evt.preventDefault();
+          }
+        } else {
+          if (evt.deltaY < 0) {
+            verticalStack.scrollTop += evt.deltaY;
+            evt.preventDefault();
+          } else {
+            evt.preventDefault();
+          }
+        }
+      } else {
+        if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
+          evt.preventDefault();
+          appContainer.scrollLeft += evt.deltaY;
+        }
+      }
     }, { passive: false });
 
     /* -------------------------------------------------------------
@@ -1156,15 +1302,10 @@
     function detachCard(cardElement, index) {
       clickedContainer = cardElement.closest('.hanging-container');
       currentActiveIndex = index;
-      currentImageIndex = 0; // Reset to first photo whenever a card is opened
+      currentImageIndex = 0;
 
-      // Dim hanging card slightly on wire
       clickedContainer.classList.add('snapped');
-
-      // Populate content into overlay lightbox
       populateCardData();
-
-      // Launch lightbox card interface
       document.getElementById('lightbox').classList.add('active');
     }
 
@@ -1172,24 +1313,21 @@
       const data = ojtData[currentActiveIndex];
       const activeImgUrl = data.imgs[currentImageIndex];
 
-      // Update image and textual details
       document.getElementById('zoom-img').src = activeImgUrl;
-      document.getElementById('zoom-caption').innerText = data.caption;
+      document.getElementById('zoom-caption').innerHTML = data.caption;
       document.getElementById('reflection-title').innerText = data.title;
       document.getElementById('reflection-text').innerText = data.text;
 
-      // Handle slideshow controls visibility
       const prevBtn = document.getElementById('carousel-prev');
       const nextBtn = document.getElementById('carousel-next');
       const dotsContainer = document.getElementById('carousel-dots');
 
-      dotsContainer.innerHTML = ''; // Reset dot markers
+      dotsContainer.innerHTML = '';
 
       if (data.imgs.length > 1) {
         prevBtn.style.display = 'flex';
         nextBtn.style.display = 'flex';
 
-        // Recreate dot structure based on active image list size
         data.imgs.forEach((_, idx) => {
           const dot = document.createElement('div');
           dot.className = `dot ${idx === currentImageIndex ? 'active' : ''}`;
@@ -1201,17 +1339,14 @@
       }
     }
 
-    // Change slideshow image index
     function changeImage(direction, event) {
-      event.stopPropagation(); // Prevents flipping the card when arrows are clicked
+      event.stopPropagation();
       
       const data = ojtData[currentActiveIndex];
       const totalImages = data.imgs.length;
 
-      // Wrap around logic
       currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
 
-      // Apply transition fade out and refresh image
       const imgElement = document.getElementById('zoom-img');
       imgElement.style.opacity = '0';
       
@@ -1219,7 +1354,6 @@
         imgElement.src = data.imgs[currentImageIndex];
         imgElement.style.opacity = '1';
         
-        // Update visual dot markers status
         const dots = document.querySelectorAll('.dot');
         dots.forEach((dot, idx) => {
           if (idx === currentImageIndex) {
@@ -1232,7 +1366,6 @@
     }
 
     function flipCard(event) {
-      // Avoid flipping if you click navigation controls or close button
       if (
         event.target.classList.contains('carousel-nav') || 
         event.target.classList.contains('close-btn')
@@ -1247,8 +1380,6 @@
       
       setTimeout(() => {
         document.getElementById('lightbox-card-wrapper').classList.remove('flipped');
-        
-        // Restore card back to wire after lightbox closes
         if (clickedContainer) {
           clickedContainer.classList.remove('snapped');
         }
