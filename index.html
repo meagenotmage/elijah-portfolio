@@ -3,15 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OJT | E-Portfolio</title>
+  <title>Christine Elijah Porras | OJT E-Portfolio</title>
   
-  <!-- Google Fonts for typography -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Global Styles */
+    /* Global Reset & Purple Theme Variables */
+    :root {
+      --primary: #a855f7;            /* Vibrant Purple */
+      --primary-glow: rgba(168, 85, 247, 0.45);
+      --purple-accent: #c77dff;     /* Neon Lavender */
+      --purple-dark: #0a0512;       /* Deep Dark Violet */
+      --radio-chassis: #160d29;     /* Console Metal Dark Purple */
+      --glass-border: rgba(168, 85, 247, 0.25);
+      --accent-neon: #00f2fe;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,17 +31,33 @@
     html, body {
       height: 100vh;
       width: 100vw;
-      overflow: hidden; /* Lock body to prevent any background scroll shifts */
-    }
-
-    body {
-      background-color: #0f1013;
+      overflow: hidden;
+      background-color: var(--purple-dark);
       color: #f5f5f7;
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       user-select: none;
     }
 
-    /* Ambient Canvas background & Dust */
+    /* Scroll Progress Bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(168, 85, 247, 0.1);
+      z-index: 1000;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--purple-accent), var(--accent-neon));
+      box-shadow: 0 0 12px var(--primary);
+      transition: width 0.1s ease-out;
+    }
+
+    /* Canvas Particles & Purple Background Grid */
     #dust-canvas {
       position: fixed;
       top: 0;
@@ -39,46 +65,100 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
 
-    /* Floating Blurred Polaroids in Background */
-    .bg-polaroids {
+    .bg-grid {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(199, 125, 255, 0.12) 0%, transparent 50%),
+        linear-gradient(rgba(168, 85, 247, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
       pointer-events: none;
       z-index: 0;
+    }
+
+    /* --- FLOATING BACKGROUND POLAROIDS --- */
+    .floating-polaroids-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
       overflow: hidden;
     }
 
-    .floating-card {
+    .float-polaroid {
       position: absolute;
-      width: 180px;
-      height: 220px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      filter: blur(8px);
+      width: 120px;
+      background: rgba(22, 13, 41, 0.6);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      padding: 6px 6px 18px 6px;
+      border-radius: 6px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.7), 0 0 20px var(--primary-glow);
+      opacity: 0.35;
+      filter: saturate(0.9) blur(1px);
+      animation: floatAround 20s infinite ease-in-out alternate;
+    }
+
+    .float-polaroid img {
+      width: 100%;
+      height: 85px;
+      object-fit: cover;
       border-radius: 4px;
-      animation: float 28s infinite linear;
     }
 
-    @keyframes float {
-      0% {
-        transform: translateY(110vh) rotate(0deg);
-        opacity: 0;
-      }
-      10% { opacity: 0.25; }
-      90% { opacity: 0.25; }
-      100% {
-        transform: translateY(-20vh) rotate(360deg);
-        opacity: 0;
-      }
+    .float-polaroid p {
+      font-family: 'Architects Daughter', cursive;
+      color: var(--purple-accent);
+      font-size: 0.75rem;
+      text-align: center;
+      margin-top: 4px;
+      font-weight: 700;
     }
 
-    /* Main App Horizontal Container */
+    .fp-0  { top: 5%;  left: 3%;   transform: rotate(-12deg); animation-duration: 22s; animation-delay: 0s; }
+    .fp-1  { top: 25%; left: 15%;  transform: rotate(8deg);   animation-duration: 19s; animation-delay: -3s; }
+    .fp-2  { top: 50%; left: 5%;   transform: rotate(-15deg); animation-duration: 25s; animation-delay: -7s; }
+    .fp-3  { top: 72%; left: 12%;  transform: rotate(10deg);  animation-duration: 21s; animation-delay: -2s; }
+    .fp-4  { top: 10%; left: 28%;  transform: rotate(-6deg);  animation-duration: 24s; animation-delay: -10s; }
+    .fp-5  { top: 38%; left: 26%;  transform: rotate(14deg);  animation-duration: 18s; animation-delay: -5s; }
+    .fp-6  { top: 65%; left: 24%;  transform: rotate(-9deg);  animation-duration: 23s; animation-delay: -12s; }
+    .fp-7  { top: 82%; left: 32%;  transform: rotate(7deg);   animation-duration: 20s; animation-delay: -4s; }
+    .fp-8  { top: 8%;  left: 45%;  transform: rotate(-14deg); animation-duration: 26s; animation-delay: -8s; }
+    .fp-9  { top: 30%; left: 42%;  transform: rotate(11deg);  animation-duration: 17s; animation-delay: -15s; }
+    .fp-10 { top: 58%; left: 44%;  transform: rotate(-8deg);  animation-duration: 22s; animation-delay: -1s; }
+    .fp-11 { top: 78%; left: 50%;  transform: rotate(13deg);  animation-duration: 27s; animation-delay: -9s; }
+    .fp-12 { top: 6%;  left: 62%;  transform: rotate(9deg);   animation-duration: 21s; animation-delay: -11s; }
+    .fp-13 { top: 32%; left: 60%;  transform: rotate(-11deg); animation-duration: 19s; animation-delay: -6s; }
+    .fp-14 { top: 55%; left: 63%;  transform: rotate(6deg);   animation-duration: 24s; animation-delay: -14s; }
+    .fp-15 { top: 75%; left: 68%;  transform: rotate(-13deg); animation-duration: 20s; animation-delay: -3s; }
+    .fp-16 { top: 12%; left: 78%;  transform: rotate(-7deg);  animation-duration: 23s; animation-delay: -13s; }
+    .fp-17 { top: 35%; left: 76%;  transform: rotate(12deg);  animation-duration: 18s; animation-delay: -8s; }
+    .fp-18 { top: 62%; left: 80%;  transform: rotate(-10deg); animation-duration: 25s; animation-delay: -4s; }
+    .fp-19 { top: 80%; left: 82%;  transform: rotate(8deg);   animation-duration: 22s; animation-delay: -16s; }
+    .fp-20 { top: 4%;  left: 90%;  transform: rotate(15deg);  animation-duration: 26s; animation-delay: -2s; }
+    .fp-21 { top: 28%; left: 88%;  transform: rotate(-9deg);  animation-duration: 20s; animation-delay: -10s; }
+    .fp-22 { top: 52%; left: 91%;  transform: rotate(11deg);  animation-duration: 24s; animation-delay: -5s; }
+    .fp-23 { top: 76%; left: 89%;  transform: rotate(-14deg); animation-duration: 21s; animation-delay: -12s; }
+
+    @keyframes floatAround {
+      0% { transform: translateY(0px) translateX(0px) rotate(-10deg) scale(0.95); }
+      33% { transform: translateY(-30px) translateX(15px) rotate(6deg) scale(1.02); }
+      66% { transform: translateY(20px) translateX(-20px) rotate(-5deg) scale(0.98); }
+      100% { transform: translateY(-15px) translateX(10px) rotate(4deg) scale(1.01); }
+    }
+
+    /* Main Container */
     .app-container {
       display: flex;
       flex-direction: row;
@@ -87,244 +167,734 @@
       overflow-y: hidden;
       overflow-x: auto;
       position: relative;
-      z-index: 2;
+      z-index: 3;
       scrollbar-width: thin;
-      scrollbar-color: #444 #111;
+      scrollbar-color: var(--primary) transparent;
       scroll-behavior: smooth;
     }
 
     .app-container::-webkit-scrollbar {
-      height: 8px;
-    }
-    .app-container::-webkit-scrollbar-track {
-      background: #0f1013;
+      height: 6px;
     }
     .app-container::-webkit-scrollbar-thumb {
-      background: #333;
-      border-radius: 4px;
+      background: var(--primary);
+      border-radius: 10px;
     }
 
-    /* --- Vertical Stack Wrapper (Landing + Reels) --- */
     .vertical-stack {
       width: 100vw;
       height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
       flex-shrink: 0;
-      scroll-snap-type: y mandatory;
-      scrollbar-width: none; 
-      -ms-overflow-style: none;
-    }
-    .vertical-stack::-webkit-scrollbar {
-      display: none; 
-    }
-
-    /* Section block template */
-    section {
-      height: 100vh;
-      display: flex;
-      align-items: center;
       position: relative;
-      scroll-snap-align: start;
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
-    /* Landing Section */
+    /* --- LANDING RADIO CONSOLE SECTION --- */
     .landing-section {
       width: 100%;
-      height: 100vh;
-      padding: 0 8%;
+      min-height: 100vh;
+      padding: 0 5%;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      z-index: 3;
-      box-sizing: border-box;
-      background: #0f1013;
+      perspective: 1200px;
     }
 
-    .landing-content h1 {
-      font-size: 4.5rem;
+    /* Radio Chassis Card */
+    .landing-card {
+      display: flex;
+      flex-direction: column;
+      max-width: 1050px;
+      width: 100%;
+      background: linear-gradient(145deg, #180e2b 0%, #0e071c 100%);
+      border: 2px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 35px 45px;
+      border-radius: 28px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 50px var(--primary-glow);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+      margin: 20px 0;
+    }
+
+    /* Top Radio Console Bar */
+    .radio-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+
+    .radio-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--purple-accent);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .radio-brand-logo {
+      width: 14px;
+      height: 14px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    /* ON AIR BADGE */
+    .on-air-badge {
+      background: #090310;
+      border: 1px solid var(--primary);
+      padding: 5px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #f43f5e;
+      border-radius: 50%;
+      animation: blink 1.2s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .on-air-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 12px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--purple-accent);
+      border-radius: 2px;
+      animation: eq 0.8s infinite ease-in-out alternate;
+    }
+    .eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+    .eq-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+
+    @keyframes eq {
+      0% { height: 20%; }
+      100% { height: 100%; }
+    }
+
+    /* Radio Tuner Gauge Display */
+    .radio-tuner-display {
+      background: #06020c;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      padding: 12px 20px;
+      margin-bottom: 30px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tuner-header {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      color: #888;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tuner-scale {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #7a6e93;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .tuner-scale span.active-freq {
+      color: #fff;
+      text-shadow: 0 0 10px var(--primary-glow);
+      font-size: 1.1rem;
+    }
+
+    .tuner-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 60%;
+      width: 2px;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .tuner-needle::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      width: 8px;
+      height: 8px;
+      background: var(--purple-accent);
+      border-radius: 50%;
+    }
+
+    /* Inner Radio Body Content */
+    .radio-body {
+      display: flex;
+      align-items: center;
+      gap: 45px;
+    }
+
+    .landing-media {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    /* ENLARGED PERSONAL PHOTO */
+    .profile-img-wrapper {
+      position: relative;
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      padding: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--purple-accent));
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85), 0 0 50px var(--primary-glow);
+    }
+
+    .profile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+
+    /* Radio Info Section */
+    .landing-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .portfolio-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--purple-accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* NAME & LOGO CONTAINER (TRANSPARENT BACKGROUND) */
+    .name-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .student-name {
+      font-size: 2.4rem;
       font-weight: 800;
-      letter-spacing: -1px;
       line-height: 1.1;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+      background: linear-gradient(135deg, #ffffff 40%, var(--purple-accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .landing-content p {
-      font-size: 1.15rem;
-      color: #a1a1aa;
-      max-width: 550px;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
+    /* STATION LOGO WRAPPER - TRANSPARENT */
+    .station-logo-wrapper {
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 220px;
+      height: fit-content;
+      flex-shrink: 0;
     }
 
-    .nav-hints-container {
+    .station-logo {
+      max-width: 100%;
+      height: auto;
+      max-height: 65px;
+      object-fit: contain;
+      background: transparent;
+      filter: drop-shadow(0 4px 12px rgba(168, 85, 247, 0.4));
+    }
+
+    .student-details {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+      background: rgba(10, 5, 18, 0.6);
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .detail-item {
       display: flex;
-      gap: 32px;
+      flex-direction: column;
     }
 
-    .scroll-hint {
+    .detail-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #9283a8;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Radio Controls & Knobs Bar */
+    .radio-controls-footer {
       display: flex;
       align-items: center;
-      gap: 12px;
-      color: #71717a;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: color 0.3s;
+      justify-content: space-between;
+      margin-top: 5px;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
-    .scroll-hint:hover {
-      color: #f4f4f5;
+    .radio-knobs {
+      display: flex;
+      gap: 20px;
+      align-items: center;
     }
 
-    .scroll-hint.down svg {
-      animation: nudgeDown 1.5s infinite ease-in-out;
-    }
-
-    .scroll-hint.right svg {
-      animation: nudgeRight 1.5s infinite ease-in-out;
-    }
-
-    @keyframes nudgeDown {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
-    }
-
-    @keyframes nudgeRight {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(6px); }
-    }
-
-    /* --- REELS SECTION --- */
-    .reels-page-section {
-      width: 100%;
-      height: 100vh;
-      padding: 20px 20px 30px 20px;
+    .knob-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      gap: 5px;
+    }
+
+    .knob {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #3a225c, #130a24);
+      border: 2px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 5px var(--primary-glow);
       position: relative;
-      box-sizing: border-box;
-      z-index: 3;
-      background: #0f1013;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .knob::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 10px;
+      background: var(--purple-accent);
+      border-radius: 2px;
+    }
+
+    .knob:hover {
+      transform: rotate(25deg);
+    }
+
+    .knob-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      color: #887a9c;
+      letter-spacing: 1px;
+    }
+
+    .action-buttons-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .explore-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary), #7e22ce);
+      color: #fff;
+      padding: 11px 20px;
+      border-radius: 35px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 25px var(--primary-glow);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .explore-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 30px var(--primary-glow);
+    }
+
+    .explore-btn.reflection-btn {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+
+    .explore-btn.reels-btn {
+      background: linear-gradient(135deg, #db2777, #9333ea);
+    }
+
+    .explore-btn svg {
+      transition: transform 0.3s;
+    }
+
+    .explore-btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* --- REELS PAGE SECTION --- */
+    .reels-section {
+      width: 100%;
+      min-height: 100vh;
+      padding: 60px 5% 80px 5%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(10, 5, 18, 0.85);
+      backdrop-filter: blur(10px);
     }
 
     .reels-header {
       text-align: center;
-      margin-bottom: 14px;
-      max-width: 600px;
-      z-index: 5;
+      margin-bottom: 40px;
     }
 
     .reels-header h2 {
       font-size: 2.2rem;
       font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 6px;
-      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      background: linear-gradient(135deg, #ffffff, var(--purple-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .reels-header p {
+      color: #9283a8;
+      font-size: 0.95rem;
+    }
+
+    .reels-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .reel-card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      width: 100%;
+    }
+
+    .reel-card {
+      width: 100%;
+      background: linear-gradient(160deg, #160d29 0%, #0a0414 100%);
+      border: 2px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--primary-glow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 15px;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .reel-card-link:hover .reel-card {
+      transform: translateY(-6px);
+      border-color: var(--primary);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 45px var(--primary-glow);
+    }
+
+    /* REEL IMAGE THUMBNAIL CONTAINER */
+    .reel-image-container {
+      width: 100%;
+      height: 480px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      position: relative;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+
+    .reel-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .reel-card-link:hover .reel-thumbnail {
+      transform: scale(1.05);
+    }
+
+    .play-overlay-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: rgba(168, 85, 247, 0.85);
+      backdrop-filter: blur(4px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.5rem;
+      box-shadow: 0 0 25px var(--primary-glow);
+      transition: all 0.3s ease;
+      padding-left: 3px;
+    }
+
+    .reel-card-link:hover .play-overlay-icon {
+      transform: translate(-50%, -50%) scale(1.15);
+      background: var(--primary);
+      box-shadow: 0 0 35px var(--primary-glow);
+    }
+
+    .reel-overlay-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .reel-badge {
+      align-self: flex-start;
+      background: rgba(168, 85, 247, 0.3);
+      border: 1px solid var(--primary);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .reel-info h4 {
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .reel-info p {
+      font-size: 0.85rem;
+      color: #d1d5db;
+      line-height: 1.4;
+    }
+
+    .back-to-top-btn {
+      margin-top: 40px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+
+    .back-to-top-btn:hover {
+      background: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    /* --- REFLECTIONS MODAL POP-UP --- */
+    .reflections-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(10, 5, 18, 0.94);
+      backdrop-filter: blur(20px);
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .reflections-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reflections-dialog {
+      background: linear-gradient(145deg, #180e2b 0%, #0e071c 100%);
+      border: 2px solid var(--glass-border);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 50px var(--primary-glow);
+      border-radius: 28px;
+      width: 100%;
+      max-width: 880px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+    }
+
+    .reflections-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+      padding-bottom: 18px;
+      margin-bottom: 25px;
+    }
+
+    .reflections-modal-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, var(--purple-accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .reels-header p {
-      font-size: 0.9rem;
-      color: #a1a1aa;
-      line-height: 1.4;
+    /* OVERALL REFLECTION HIGHLIGHT CARD */
+    .overall-reflection-card {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(199, 125, 255, 0.1) 100%);
+      border: 1.5px solid var(--primary);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px var(--primary-glow);
     }
 
-    .reels-deck {
-      width: 460px;
-      max-width: 92vw;
-      height: calc(100vh - 130px);
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      padding: 0 4px 20px 4px;
-      scroll-snap-type: y mandatory;
-      box-sizing: border-box;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+    .overall-reflection-card .reflection-card-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--purple-accent);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
     }
 
-    .reels-deck::-webkit-scrollbar {
-      display: none;
+    .overall-reflection-card .reflection-card-body {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #ffffff;
+      font-weight: 500;
     }
 
-    /* FB REEL CARD (METHOD 1 IFRAME CONTAINER) */
-    .reel-unit {
-      width: 100%;
-      height: calc(100vh - 150px);
-      max-height: 750px;
-      flex-shrink: 0;
-      scroll-snap-align: center;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-      transition: border-color 0.3s, background 0.3s;
+    .reflections-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
     }
 
-    .reel-unit:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.04);
+    .reflection-card {
+      background: rgba(22, 13, 41, 0.7);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 18px;
+      padding: 22px;
+      transition: all 0.3s ease;
     }
 
-    .reel-video-box {
-      width: 100%;
-      flex: 1;
-      background: #000;
-      border-radius: 14px;
-      overflow: hidden;
-      position: relative;
+    .reflection-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.2);
+    }
+
+    .reflection-card-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--purple-accent);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .reflection-card-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
       margin-bottom: 10px;
     }
 
-    .reel-video-box iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
+    .reflection-card-body {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #c4b5fd;
     }
 
-    .reel-caption-box {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 2px 6px;
-    }
-
-    .reel-caption-box h4 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-
-    .reel-caption-box p {
-      font-size: 0.82rem;
-      color: #a1a1aa;
-      line-height: 1.35;
-    }
-
-    /* --- GALLERY SECTION (HANGING CARDS) --- */
+    /* --- GALLERY SECTION (SWINGING CLOTHESLINE) --- */
     .gallery-section {
-      padding-left: 10vw;
+      padding-left: 8vw;
       padding-right: 15vw;
       display: flex;
-      gap: 240px; 
+      gap: 220px; 
       align-items: flex-start;
-      padding-top: 10vh;
+      padding-top: 12vh;
       flex-shrink: 0;
+      position: relative;
+    }
+
+    .gallery-section::before {
+      content: '';
+      position: absolute;
+      top: 12vh;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(168,85,247,0.1), rgba(168,85,247,0.5), rgba(168,85,247,0.1));
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      z-index: 1;
     }
 
     .hanging-container {
@@ -333,100 +903,116 @@
       flex-direction: column;
       align-items: center;
       transform-origin: top center;
-      animation: sway 5.5s ease-in-out infinite alternate;
-      transition: opacity 0.4s ease;
+      animation: sway 6s ease-in-out infinite alternate;
+      z-index: 2;
     }
 
-    .hanging-container:nth-child(even) {
-      animation-delay: -1.8s;
-      animation-duration: 6s;
-    }
-    .hanging-container:nth-child(3n) {
-      animation-delay: -3.2s;
-      animation-duration: 5.2s;
-    }
-    .hanging-container:nth-child(4n) {
-      animation-delay: -1.2s;
-      animation-duration: 5.8s;
-    }
+    .hanging-container:nth-child(even) { animation-delay: -2s; animation-duration: 5.2s; }
+    .hanging-container:nth-child(3n) { animation-delay: -3.5s; animation-duration: 6.5s; }
 
     @keyframes sway {
       0% { transform: rotate(-2.5deg); }
       100% { transform: rotate(2.5deg); }
     }
 
-    .hanging-wire {
-      width: 2px;
-      height: 150px;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 100%);
-      position: relative;
-      transition: opacity 0.4s ease;
+    .clothespin {
+      position: absolute;
+      top: -16px;
+      width: 14px;
+      height: 32px;
+      background: linear-gradient(to right, #b8860b, #daa520, #8b5a2b);
+      border-radius: 2px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      z-index: 10;
     }
 
-    .hanging-wire::after {
+    .clothespin::after {
       content: '';
       position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 12px;
-      height: 12px;
-      background: #555;
-      border-radius: 50%;
-      border: 2px solid #222;
+      top: 12px;
+      left: -1px;
+      width: 16px;
+      height: 3px;
+      background: #333;
+    }
+
+    .hanging-wire {
+      width: 2px;
+      height: 70px;
+      background: rgba(168, 85, 247, 0.3);
     }
 
     .polaroid {
-      width: 380px;  
-      height: 460px; 
-      background-color: #faf9f6;
-      padding: 20px 20px 48px 20px;
-      box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3);
-      border-radius: 3px;
+      width: 360px;  
+      height: 440px; 
+      background-color: rgba(22, 13, 41, 0.8);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      padding: 18px 18px 45px 18px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.7), 0 0 15px rgba(168, 85, 247, 0.15);
+      border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, opacity 0.4s ease;
+      transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
       position: relative;
       transform-style: preserve-3d;
     }
 
+    .polaroid::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1deg);
+      width: 90px;
+      height: 26px;
+      background: rgba(168, 85, 247, 0.25);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 5;
+    }
+
     .polaroid:hover {
-      transform: scale(1.04);
-      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.4);
+      transform: scale(1.05) translateY(-10px) rotate(0deg) !important;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--primary-glow);
     }
 
     .polaroid-img {
       width: 100%;
-      height: 315px; 
+      height: 300px; 
       object-fit: cover;
-      background-color: #ddd;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      background-color: transparent;
+      border-radius: 8px;
+      filter: contrast(1.03) brightness(0.98);
+      transition: filter 0.3s;
+    }
+
+    .polaroid:hover .polaroid-img {
+      filter: contrast(1.08) brightness(1.02);
     }
 
     .polaroid-caption {
       font-family: 'Architects Daughter', cursive;
-      color: #2b2b2b;
-      font-size: 1.3rem; 
+      color: var(--purple-accent);
+      font-size: 1.8rem;
       text-align: center;
-      margin-top: 18px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      margin-top: 16px;
+      font-weight: 700;
     }
 
     .hanging-container.snapped {
       opacity: 0.15;
     }
 
-    /* Lightbox Overlay */
+    /* --- LIGHTBOX OVERLAY & FLIP CARD --- */
     .lightbox {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(10, 10, 12, 0.94);
-      backdrop-filter: blur(15px);
-      z-index: 100;
+      background-color: rgba(10, 5, 18, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 200;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
@@ -441,12 +1027,12 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 650px;   
-      height: 780px;  
+      width: 620px;   
+      height: 760px;  
       perspective: 1500px;
       cursor: pointer;
       opacity: 0;
-      z-index: 105;
+      z-index: 205;
       transform: translate(-50%, -50%) scale(0.85);
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
     }
@@ -475,25 +1061,26 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      background-color: #faf9f6;
-      border-radius: 4px;
-      padding: 28px;
-      box-shadow: 0 35px 70px rgba(0,0,0,0.85);
+      background: linear-gradient(145deg, #180e2b 0%, #0e071c 100%);
+      border: 2px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 26px;
+      box-shadow: 0 35px 80px rgba(0,0,0,0.9), 0 0 30px var(--primary-glow);
       display: flex;
       flex-direction: column;
     }
 
     .card-front {
       justify-content: flex-start;
-      position: relative;
     }
 
     .carousel-container {
       position: relative;
       width: 100%;
-      height: 580px; 
-      border-radius: 2px;
+      height: 570px; 
+      border-radius: 8px;
       overflow: hidden;
+      background: transparent;
     }
 
     .card-front .zoom-img {
@@ -507,27 +1094,29 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.65);
+      background: rgba(10, 5, 18, 0.8);
       color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       z-index: 10;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
     .carousel-nav:hover {
-      background: rgba(0, 0, 0, 0.85);
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-50%) scale(1.1);
     }
 
-    .carousel-nav.prev { left: 15px; }
-    .carousel-nav.next { right: 15px; }
+    .carousel-nav.prev { left: 16px; }
+    .carousel-nav.next { right: 16px; }
 
     .carousel-dots {
       position: absolute;
@@ -542,37 +1131,40 @@
     .dot {
       width: 8px;
       height: 8px;
-      background: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.4);
       border-radius: 50%;
-      transition: background 0.3s, transform 0.3s;
+      transition: all 0.3s;
     }
 
     .dot.active {
-      background: #ffffff;
-      transform: scale(1.3);
+      background: var(--primary);
+      transform: scale(1.4);
     }
 
     .card-front .zoom-caption {
       font-family: 'Architects Daughter', cursive;
-      color: #2b2b2b;
-      font-size: 1.6rem; 
+      color: var(--purple-accent);
+      font-size: 1.7rem; 
       text-align: center;
-      margin-top: 20px;
+      margin-top: 18px;
+      font-weight: 700;
     }
 
     .card-back {
       transform: rotateY(180deg);
-      color: #2b2b2b;
+      color: #e2d9f3;
       justify-content: space-between;
       padding: 35px;
+      background: linear-gradient(145deg, #140a26 0%, #090312 100%);
     }
 
     .card-back h3 {
       font-family: 'Architects Daughter', cursive;
       font-size: 1.9rem;
-      border-bottom: 2px dashed #ccc;
+      border-bottom: 2px dashed rgba(168, 85, 247, 0.4);
       padding-bottom: 12px;
       margin-bottom: 18px;
+      color: #ffffff;
     }
 
     .card-back p {
@@ -582,306 +1174,633 @@
       flex-grow: 1;
       overflow-y: auto;
       padding-right: 8px;
+      color: #d8c7f5;
     }
 
     .card-back-footer {
-      font-size: 0.85rem;
-      color: #777;
+      font-size: 0.8rem;
+      color: var(--purple-accent);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       text-align: right;
       margin-top: 20px;
+      font-weight: 700;
     }
 
     .instructions {
       position: fixed;
-      bottom: 30px;
+      bottom: 25px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
-      color: #a1a1aa;
-      font-size: 0.95rem;
+      color: #9f88b8;
+      font-size: 0.9rem;
       pointer-events: none;
-      animation: pulse 2s infinite ease-in-out;
-      z-index: 106;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
+      z-index: 206;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
 
     .close-btn {
       position: fixed;
       top: 30px;
       right: 40px;
-      background: none;
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid var(--primary);
       color: #fff;
-      font-size: 1rem;
-      padding: 10px 22px;
+      font-size: 0.9rem;
+      padding: 10px 24px;
       border-radius: 30px;
       cursor: pointer;
       transition: all 0.3s;
-      font-family: 'Montserrat', sans-serif;
-      z-index: 110;
+      font-weight: 700;
+      z-index: 310;
     }
 
     .close-btn:hover {
-      background-color: #fff;
-      color: #111;
-      border-color: #fff;
+      background-color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .landing-card { padding: 25px; }
+      .radio-body { flex-direction: column; gap: 20px; }
+      .student-name { font-size: 2rem; }
+      .student-details { grid-template-columns: 1fr; }
+      .lightbox-card-wrapper { width: 90vw; height: 75vh; }
+      .name-container { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .reflections-grid { grid-template-columns: 1fr; }
+      .radio-controls-footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Dust Layer Dynamic Canvas -->
+  <!-- Top Scroll Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- FLOATING BACKGROUND POLAROIDS (ALL DAYS 0 TO 23) -->
+  <div class="floating-polaroids-bg">
+    <div class="float-polaroid fp-0"><img src="assets/0/IMG_8375.jpg" alt="Day 0"><p>Day 0</p></div>
+    <div class="float-polaroid fp-1"><img src="assets/1/IMG_8786.jpg" alt="Day 1"><p>Day 1</p></div>
+    <div class="float-polaroid fp-2"><img src="assets/2/IMG_8828.jpg" alt="Day 2"><p>Day 2</p></div>
+    <div class="float-polaroid fp-3"><img src="assets/3/IMG_8966.jpg" alt="Day 3"><p>Day 3</p></div>
+    <div class="float-polaroid fp-4"><img src="assets/4/IMG_9027.jpg" alt="Day 4"><p>Day 4</p></div>
+    <div class="float-polaroid fp-5"><img src="assets/5/IMG_4030.PNG" alt="Day 5"><p>Day 5</p></div>
+    <div class="float-polaroid fp-6"><img src="assets/6/IMG_3876.PNG" alt="Day 6"><p>Day 6</p></div>
+    <div class="float-polaroid fp-7"><img src="assets/7/IMG_9498.jpg" alt="Day 7"><p>Day 7</p></div>
+    <div class="float-polaroid fp-8"><img src="assets/8/IMG_9446.jpg" alt="Day 8"><p>Day 8</p></div>
+    <div class="float-polaroid fp-9"><img src="assets/9/IMG_4039.PNG" alt="Day 9"><p>Day 9</p></div>
+    <div class="float-polaroid fp-10"><img src="assets/10/IMG_4058.PNG" alt="Day 10"><p>Day 10</p></div>
+    <div class="float-polaroid fp-11"><img src="assets/11/IMG_4043.PNG" alt="Day 11"><p>Day 11</p></div>
+    <div class="float-polaroid fp-12"><img src="assets/12/IMG_0479.jpg" alt="Day 12"><p>Day 12</p></div>
+    <div class="float-polaroid fp-13"><img src="assets/13/IMG_0591.jpg" alt="Day 13"><p>Day 13</p></div>
+    <div class="float-polaroid fp-14"><img src="assets/14/IMG_0691.jpg" alt="Day 14"><p>Day 14</p></div>
+    <div class="float-polaroid fp-15"><img src="assets/15/IMG_0836.jpg" alt="Day 15"><p>Day 15</p></div>
+    <div class="float-polaroid fp-16"><img src="assets/16/IMG_2233.jpg" alt="Day 16"><p>Day 16</p></div>
+    <div class="float-polaroid fp-17"><img src="assets/17/IMG_4054.PNG" alt="Day 17"><p>Day 17</p></div>
+    <div class="float-polaroid fp-18"><img src="assets/18/IMG_1513.PNG" alt="Day 18"><p>Day 18</p></div>
+    <div class="float-polaroid fp-19"><img src="assets/19/IMG_1780.jpg" alt="Day 19"><p>Day 19</p></div>
+    <div class="float-polaroid fp-20"><img src="assets/20/IMG_8938.jpg" alt="Day 20"><p>Day 20</p></div>
+    <div class="float-polaroid fp-21"><img src="assets/21/IMG_2195.jpg" alt="Day 21"><p>Day 21</p></div>
+    <div class="float-polaroid fp-22"><img src="assets/22/IMG_2372.jpg" alt="Day 22"><p>Day 22</p></div>
+    <div class="float-polaroid fp-23"><img src="assets/23/IMG_4057.PNG" alt="Day 23"><p>Day 23</p></div>
+  </div>
+
+  <!-- Dynamic Dust Canvas & Ambient Purple Grid -->
   <canvas id="dust-canvas"></canvas>
+  <div class="bg-grid"></div>
 
-  <!-- Blurred Floating Background Polaroids -->
-  <div class="bg-polaroids" id="bg-polaroids"></div>
-
-  <!-- Main Horizontal Scroller App -->
+  <!-- Main App Scroller -->
   <div class="app-container" id="app-container">
     
-    <!-- LEFT SIDE VIEWPORT STACK (Landing + Reels) -->
+    <!-- LANDING & REELS VERTICAL STACK -->
     <div class="vertical-stack" id="vertical-stack">
       
-      <!-- 1. LANDING SCREEN -->
+      <!-- HERO LANDING SECTION -->
       <section class="landing-section" id="landing">
-        <div class="landing-content">
-          <h1>christine elijah<br>PORRAS</h1>
-          <p>Explore my On-the-Job Training journey at Aksyon Radio. Scroll down to view broadcast reels, or scroll right to enter the photo diary gallery.</p>
-        <!---  <div class="nav-hints-container">
-            <div class="scroll-hint down" onclick="scrollToReels()">
-              <span>Click to Reels</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M19 12l-7 7-7-7" />
-              </svg>
-            </div> --->
-            <div class="scroll-hint right" onclick="scrollToGallery()"> 
-              <span>Go to Photo Gallery</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+        <div class="landing-card" id="hero-card">
+          
+          <!-- Radio Top Bar Controls -->
+          <div class="radio-top-bar">
+            <div class="radio-brand">
+              <div class="radio-brand-logo"></div>
+              <span>Aksyon Radio • Receiver Unit FX-100</span>
+            </div>
+
+            <div class="on-air-badge">
+              <div class="live-dot"></div>
+              <span class="on-air-text">LIVE ON AIR</span>
+              <div class="equalizer">
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+              </div>
             </div>
           </div>
+
+          <!-- Radio Tuner Frequency Gauge -->
+          <div class="radio-tuner-display">
+            <div class="tuner-header">
+              <span>FM STEREO TUNER</span>
+              <span>720 MHz • AKSYON RADIO</span>
+            </div>
+            <div class="tuner-scale">
+              <span>88</span>
+              <span>92</span>
+              <span>96</span>
+              <span class="active-freq">720</span>
+              <span>104</span>
+              <span>108</span>
+              <div class="tuner-needle"></div>
+            </div>
+          </div>
+
+          <!-- Radio Chassis Main Body -->
+          <div class="radio-body">
+            
+            <!-- Student Photo -->
+            <div class="landing-media">
+              <div class="profile-img-wrapper">
+                <img src="assets/IMG_4897.jpg" alt="Christine Elijah F. Porras" class="profile-img">
+              </div>
+            </div>
+            
+            <!-- Information & Audio Knobs -->
+            <div class="landing-info">
+              <span class="portfolio-badge">Internship E-Portfolio</span>
+              
+              <!-- Name & Transparent Aksyon Station Logo Side-by-Side -->
+              <div class="name-container">
+                <h1 class="student-name">Christine Elijah F. Porras</h1>
+                <div class="station-logo-wrapper">
+                  <img src="assets/8d6589f543296b54b47c3c5c8a39cfeb.png" alt="Aksyon Radio" class="station-logo">
+                </div>
+              </div>
+              
+              <div class="student-details">
+                <div class="detail-item">
+                  <span class="detail-label">Program</span>
+                  <span class="detail-value">BAB</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Section</span>
+                  <span class="detail-value">4-A</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Station</span>
+                  <span class="detail-value">Aksyon Radio</span>
+                </div>
+              </div>
+
+              <!-- Radio Control Buttons & Explore / Reflections / Reels -->
+              <div class="radio-controls-footer">
+                <div class="radio-knobs">
+                  <div class="knob-wrapper">
+                    <div class="knob" title="Volume Control" onclick="playSound('pop')"></div>
+                    <span class="knob-label">VOLUME</span>
+                  </div>
+                  <div class="knob-wrapper">
+                    <div class="knob" style="transform: rotate(45deg);" title="Tuning Dial" onclick="playSound('pop')"></div>
+                    <span class="knob-label">TUNING</span>
+                  </div>
+                </div>
+
+                <div class="action-buttons-group">
+                  <button class="explore-btn" onclick="scrollToGallery()"> 
+                    <span>Gallery</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  <button class="explore-btn reflection-btn" onclick="openReflectionsModal()"> 
+                    <span>Reflections</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                  </button>
+
+                  <button class="explore-btn reels-btn" onclick="scrollToReels()"> 
+                    <span>Reels</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M12 5v14M5 12l7 7 7-7" />
+                    </svg>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 
-      <!-- 2. REELS HUB (Method 1: Dynamic Iframe Deck) 
-      <section class="reels-page-section" id="reels">
+      <!-- REELS SCROLL-DOWN SECTION -->
+      <section class="reels-section" id="reels">
         <div class="reels-header">
-          <h2>Aksyon Radio Reels</h2>
-          <p>Scroll vertically inside the deck to watch broadcast captures, audio mixes, and active studio logs recorded throughout my internship schedule.</p>
+          <h2>Internship Reels Feed</h2>
+          <p>Behind-the-scenes highlights and field coverage clips</p>
         </div>
 
-        Dynamic Container where JS renders Method 1 Facebook IFrames 
-        <div class="reels-deck" id="reels-deck"></div>
+        <div class="reels-feed">
+          
+          <!-- Reel 1 -->
+          <a href="https://www.facebook.com/share/v/1EUsptHStk/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/5/IMG_4030.PNG" alt="Field Report at Oton Amphitheater" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #1 • Standupper</span>
+                <div class="reel-info">
+                  <h4>Field Report at Oton Amphitheater</h4>
+                  <p>On-the-ground reporting during my first official field assignment.</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Reel 2 -->
+          <a href="https://www.facebook.com/share/v/1BcAFSFYVh/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/10/IMG_4058.PNG" alt="'Tingog' Segment Shoot" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #2 • Tingog Illonggo</span>
+                <div class="reel-info">
+                  <h4>'Tingog' Segment Shoot</h4>
+                  <p>Interviews with local commuters and workers across Iloilo City Proper.</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Reel 3 -->
+          <a href="https://www.facebook.com/share/r/188Ps45rH4/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/11/IMG_4043.PNG" alt="3rd Infantry Division Headquarters" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #3 • Capitol Standupper</span>
+                <div class="reel-info">
+                  <h4>Sorbete Capital of Iloilo</h4>
+                  <p>Capitol about making Anilao, Pavia as the Sorbete Capital of Iloilo  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Reel 4 -->
+          <a href="https://www.facebook.com/share/r/1JeJJJsYB3/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/18/IMG_1513.PNG" alt="Hampang Kape Latte Art Competition" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #4 • Feature Coverage</span>
+                <div class="reel-info">
+                  <h4>WorldBex: Hampang Kape Latte Art Competition</h4>
+                  <p>Showcasing the barista skills and creative entries during the live competition.</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+           <!-- Reel 5 -->
+          <a href="https://www.facebook.com/share/r/188Ps45rH4/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/11/IMG_4045.PNG" alt="Hampang Kape Latte Art Competition" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #5 • Tricycle Driver found dead</span>
+                <div class="reel-info">
+                  <h4>Tricycle Driver Found dead at his home</h4>
+                  <p>The tricycle driver found in his hut at Brgy. Cubay. Jaro, Iloilo  </p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+           <!-- Reel 6 -->
+          <a href="https://www.facebook.com/share/v/1BcAFSFYVh/" target="_blank" rel="noopener noreferrer" class="reel-card-link">
+            <div class="reel-card">
+              <div class="reel-image-container">
+                <img src="assets/23/IMG_4057.PNG" alt="Hampang Kape Latte Art Competition" class="reel-thumbnail">
+                <div class="play-overlay-icon">▶</div>
+              </div>
+              <div class="reel-overlay-content">
+                <span class="reel-badge">Reel #6 • Resilience Preparedness Reel</span>
+                <div class="reel-info">
+                  <h4>National Disaster Resilience Month</h4>
+                  <p>Showing what to do, pack and know before, during and after a natural disaster.</p>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          
+
+        </div>
+
+        <button class="back-to-top-btn" onclick="scrollToTop()">↑ Back to the Top</button>
       </section>
 
-    </div> -->
-    <!-- 3. GALLERY SECTION WITH HANGING CARDS (24 Units) -->
+    </div>
+
+    <!-- GALLERY SECTION (CLOTHESLINE PHOTO DISPLAY) -->
     <section class="gallery-section" id="gallery">
 
       <!-- Days 0 to 23 -->
       <div class="hanging-container" data-index="0">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 0)">
           <img class="polaroid-img" src="assets/0/IMG_8375.jpg">
-          <div class="polaroid-caption">Day 0: </div>
+          <div class="polaroid-caption">Day 0</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="1">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 1)">
           <img class="polaroid-img" src="assets/1/IMG_8786.jpg">
-          <div class="polaroid-caption">Day 1: </div>
+          <div class="polaroid-caption">Day 1</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="2">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 2)">
           <img class="polaroid-img" src="assets/2/IMG_8828.jpg">
-          <div class="polaroid-caption">Day 2: </div>
+          <div class="polaroid-caption">Day 2</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="3">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 3)">
           <img class="polaroid-img" src="assets/3/IMG_8966.jpg">
-          <div class="polaroid-caption">Day 3: </div>
+          <div class="polaroid-caption">Day 3</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="4">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 4)">
           <img class="polaroid-img" src="assets/4/IMG_9027.jpg">
-          <div class="polaroid-caption">Day 4: </div>
+          <div class="polaroid-caption">Day 4</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="5">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 5)">
           <img class="polaroid-img" src="assets/5/IMG_4030.PNG">
-          <div class="polaroid-caption">Day 5: </div>
+          <div class="polaroid-caption">Day 5</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="6">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 6)">
           <img class="polaroid-img" src="assets/6/IMG_3876.PNG">
-          <div class="polaroid-caption">Day 6: </div>
+          <div class="polaroid-caption">Day 6</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="7">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 7)">
-          <img class="polaroid-img" src="assets/7/IMG_9498.jpg" >
-          <div class="polaroid-caption">Day 7: </div>
+          <img class="polaroid-img" src="assets/7/IMG_9498.jpg">
+          <div class="polaroid-caption">Day 7</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="8">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 8)">
           <img class="polaroid-img" src="assets/8/IMG_9446.jpg">
-          <div class="polaroid-caption">Day 8: </div>
+          <div class="polaroid-caption">Day 8</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="9">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 9)">
           <img class="polaroid-img" src="assets/9/IMG_4039.PNG">
-          <div class="polaroid-caption">Day 9: </div>
+          <div class="polaroid-caption">Day 9</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="10">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 10)">
           <img class="polaroid-img" src="assets/10/IMG_4058.PNG">
-          <div class="polaroid-caption">Day 10: </div>
+          <div class="polaroid-caption">Day 10</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="11">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 11)">
           <img class="polaroid-img" src="assets/11/IMG_4043.PNG">
-          <div class="polaroid-caption">Day 11: </div>
+          <div class="polaroid-caption">Day 11</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="12">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 12)">
           <img class="polaroid-img" src="assets/12/IMG_0479.jpg">
-          <div class="polaroid-caption">Day 12: </div>
+          <div class="polaroid-caption">Day 12</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="13">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 13)">
           <img class="polaroid-img" src="assets/13/IMG_0591.jpg">
-          <div class="polaroid-caption">Day 13: </div>
+          <div class="polaroid-caption">Day 13</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="14">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 14)">
           <img class="polaroid-img" src="assets/14/IMG_0691.jpg">
-          <div class="polaroid-caption">Day 14: </div>
+          <div class="polaroid-caption">Day 14</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="15">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 15)">
           <img class="polaroid-img" src="assets/15/IMG_0836.jpg">
-          <div class="polaroid-caption">Day 15: </div>
+          <div class="polaroid-caption">Day 15</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="16">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 16)">
           <img class="polaroid-img" src="assets/16/IMG_2233.jpg">
-          <div class="polaroid-caption">Day 16: </div>
+          <div class="polaroid-caption">Day 16</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="17">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 17)">
           <img class="polaroid-img" src="assets/17/IMG_4054.PNG">
-          <div class="polaroid-caption">Day 17: </div>
+          <div class="polaroid-caption">Day 17</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="18">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 18)">
           <img class="polaroid-img" src="assets/18/IMG_1513.PNG">
-          <div class="polaroid-caption">Day 18: </div>
+          <div class="polaroid-caption">Day 18</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="19">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 19)">
           <img class="polaroid-img" src="assets/19/IMG_1780.jpg">
-          <div class="polaroid-caption">Day 19: </div>
+          <div class="polaroid-caption">Day 19</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="20">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 20)">
           <img class="polaroid-img" src="assets/20/IMG_8938.jpg">
-          <div class="polaroid-caption">Day 20: </div>
+          <div class="polaroid-caption">Day 20</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="21">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 21)">
           <img class="polaroid-img" src="assets/21/IMG_2195.jpg">
-          <div class="polaroid-caption">Day 21: </div>
+          <div class="polaroid-caption">Day 21</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="22">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 22)">
           <img class="polaroid-img" src="assets/22/IMG_2372.jpg">
-          <div class="polaroid-caption">Day 22: </div>
+          <div class="polaroid-caption">Day 22</div>
         </div>
       </div>
 
       <div class="hanging-container" data-index="23">
+        <div class="clothespin"></div>
         <div class="hanging-wire"></div>
         <div class="polaroid" onclick="detachCard(this, 23)">
           <img class="polaroid-img" src="assets/23/IMG_4057.PNG">
-          <div class="polaroid-caption">Day 23: </div>
+          <div class="polaroid-caption">Day 23</div>
         </div>
       </div>
 
     </section>
   </div>
 
-  <!-- LIGHTBOX / INTERACTIVE DETACHED FOCUS AREA -->
+  <!-- REFLECTIONS MODAL POP-UP -->
+  <div class="reflections-modal" id="reflections-modal">
+    <div class="reflections-dialog">
+      <button class="close-btn" onclick="closeReflectionsModal()">✕ Close</button>
+      
+      <div class="reflections-modal-header">
+        <h2 class="reflections-modal-title">Internship Reflection</h2>
+      </div>
+
+      <!-- OVERALL REFLECTION SECTION -->
+      <div class="overall-reflection-card">
+        <div class="reflection-card-number">OVERALL REFLECTION</div>
+        <p class="reflection-card-body">
+          Rotating across all four departments provided a real-world look into broadcast media, showing me how administrative setup, technical execution, news writing, and field reporting work together to run a functional station.
+        </p>
+      </div>
+
+      <div class="reflections-grid">
+        <!-- Reflection 1 -->
+        <div class="reflection-card">
+          <div class="reflection-card-number">REFLECTION 01</div>
+          <h3 class="reflection-card-heading">Admin Department</h3>
+          <p class="reflection-card-body">
+            Starting in Admin showed me how much backend work goes into keeping a station running smoothly. Sorting promo slips and clearing old blocktime data wasn't just routine tasks—it made me realize that good organization and archiving are what keep station operations organized and clients trusting us.
+          </p>
+        </div>
+
+        <!-- Reflection 2 -->
+        <div class="reflection-card">
+          <div class="reflection-card-number">REFLECTION 02</div>
+          <h3 class="reflection-card-heading">Technical Department</h3>
+          <p class="reflection-card-body">
+            Stepping into the technical booth was intense, especially during live broadcasts. Handling graphics, timing ad blocks, and editing packages on Filmora under live-air pressure taught me that technical operators are the station's real backbone—you have to keep your cool and think fast when unexpected glitches happen.
+          </p>
+        </div>
+
+        <!-- Reflection 3 -->
+        <div class="reflection-card">
+          <div class="reflection-card-number">REFLECTION 03</div>
+          <h3 class="reflection-card-heading">Newsroom Department</h3>
+          <p class="reflection-card-body">
+            Writing news in Hiligaynon and angling stories for social media was a huge eye-opener. From local council updates to breaking news, I learned how to craft headlines that catch attention while realizing that double-checking your work before hitting publish is non-negotiable—one bad mistake can ruin the station's credibility with the public.
+          </p>
+        </div>
+
+        <!-- Reflection 4 -->
+        <div class="reflection-card">
+          <div class="reflection-card-number">REFLECTION 04</div>
+          <h3 class="reflection-card-heading">Reportorial Department</h3>
+          <p class="reflection-card-body">
+            Being out in the field was where everything clicked. Riding along on mobile patrols, covering fire incidents, and jumping into unexpected live Q&As with anchors forced me out of my comfort zone. It taught me how to ask the right questions under pressure, respect source privacy, build a thick skin when turned away, and keep up with the fast pace of real-world reporting.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX DETACHED INTERACTIVE CARD -->
   <div class="lightbox" id="lightbox">
     <button class="close-btn" onclick="rehangCard()">Hang Back</button>
     
@@ -893,271 +1812,276 @@
             <button class="carousel-nav next" id="carousel-next" onclick="changeImage(1, event)">&#10095;</button>
             
             <img class="zoom-img" id="zoom-img" src="" alt="Zoomed view">
-            
             <div class="carousel-dots" id="carousel-dots"></div>
           </div>
           <div class="zoom-caption" id="zoom-caption">Caption text</div>
         </div>
+
         <div class="card-face card-back">
-          <h3 id="reflection-title">OJT</h3>
-          <p id="reflection-text">Reflections are loading...</p>
-          <div class="card-back-footer">Click again to view photo</div>
+          <h3 id="reflection-title">OJT Reflection</h3>
+          <p id="reflection-text">Reflections loading...</p>
+          <div class="card-back-footer">Click card to view photo again</div>
         </div>
       </div>
     </div>
 
-    <div class="instructions">Use arrows to browse pictures • Click the frame to flip</div>
+    <div class="instructions">Use arrows to browse pictures • Click photo frame to flip card</div>
   </div>
 
   <script>
-    /* -------------------------------------------------------------
-       METHOD 1: FACEBOOK REELS DATASET
-       (Replace 'fbUrl' with your exact FB Reel plugin iframe URLs)
-       ------------------------------------------------------------- */
-   /* const reelsData = [
-      {
-        title: "01 | Morning Program Sync",
-        desc: "Evaluating master console outputs and adjusting slider configurations during live radio slots.",
-        fbUrl: "https://www.facebook.com/reel/2109421896622840"
-      },
-      {
-        title: "02 | Aux Line Configuration",
-        desc: "Conducting path tests and establishing auxiliary links with on-scene field reporters.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1339038084566658%2F&show_text=false&width=267&t=0"
-      },
-      {
-        title: "03 | Ad Segment Insertion",
-        desc: "Sequencing ad blocks and station IDs under programmed schedule structures.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "04 | Studio Microphone Setup",
-        desc: "Arranging omnidirectional mic paths and executing phase tests for guest speakers.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "05 | Sound Card Routing",
-        desc: "Evaluating signal interfaces and setting latency steps to keep remote report delays minimal.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "06 | Mixing Console Diagnostics",
-        desc: "Running daily diagnostics on fader responses and identifying sound bleed profiles.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "07 | Live Feed Monitoring",
-        desc: "Analyzing decibel fluctuations on secondary feeds to prevent signal distortion clips.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "08 | Digital Cart Player Operation",
-        desc: "Loading media tags and sequencing music transitions during standard station blocks.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "09 | Emergency Broadcast Testing",
-        desc: "Reviewing priority backup routes and checking system status for urgent alerts.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      },
-      {
-        title: "10 | Studio Wrap Up Check",
-        desc: "Shutting auxiliary paths down and resetting default program logs for afternoon teams.",
-        fbUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379984563%2F&show_text=false"
-      }
-    ];
-
-    // Helper function to auto-format standard FB links into iframe embed links
-    function formatFbEmbedUrl(url) {
-      // If it's already an embed plugin link, return it directly
-      if (url.includes('facebook.com/plugins/video.php')) {
-        return url;
-      }
-      // Otherwise, construct the official embed URL dynamically
-      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
-    }
-
-    // Render Method 1 FB Reel IFrames
-    function renderReels() {
-      const reelsDeck = document.getElementById('reels-deck');
-      if (!reelsDeck) return;
-
-      reelsDeck.innerHTML = reelsData.map((reel) => `
-        <div class="reel-unit">
-          <div class="reel-video-box">
-            <iframe 
-              src="${formatFbEmbedUrl(reel.fbUrl)}" 
-              scrolling="no" 
-              frameborder="0" 
-              allowfullscreen="true" 
-              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-            </iframe>
-          </div>
-          <div class="reel-caption-box">
-            <h4>${reel.title}</h4>
-            <p>${reel.desc}</p>
-          </div>
-        </div>
-      `).join('');
-    }
-
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', renderReels);
-   
-*/
-    /* -------------------------------------------------------------
-       1. DATA CONFIGURATION (Your 24 OJT Reflections)
-       ------------------------------------------------------------- */
+    /* DATA CONFIGURATION */
     const ojtData = [
       {
-        title: "Reflection Title",
-        caption: "Day 0: ",
+        title: "Orientation and Introduction to Aksyon Radyo Iloilo",
+        caption: "Day 0",
         imgs: ["assets/0/IMG_8375.jpg", "assets/0/IMG_8388.jpg", "assets/0/IMG_8392.jpg"],
-        text: "Reflection Description"
+        text: "1. During our orientation with Ma’am Grace Bravo, News Director of Aksyon Radyo Iloilo.<br><br>2. Photo Op with the Logo<br><br>3. Aksyon Radyo - WVSU Interns."
       },
       {
-        title: "Diving Into the Architecture",
-        caption: "Day 1: ",
+        title: "Admin Duty",
+        caption: "Day 1",
         imgs: ["assets/1/IMG_8786.jpg", "assets/1/IMG_8750.jpg", "assets/1/IMG_8723.jpg"],
-        text: "During this session, my lead mentor mapped out the structural repository architecture. I gained deep insights into how data flows across staging and production, which minimized mistakes during subsequent builds."
+        text: "1. We bought prizes for the program Dakop ka, Daog ka Roleta Promo at Sm City Iloilo.<br><br>2. Our admin in-charge treated us during our break with snacks, and we had a chat about their experiences."
       },
       {
-        title: "My First Live Contribution",
-        caption: "Day 2:",
+        title: "Hands-On Duty",
+        caption: "Day 2",
         imgs: ["assets/2/IMG_8828.jpg", "assets/2/IMG_8852.jpg", "assets/2/IMG_8855.jpg"],
-        text: "I was assigned a lightweight interface update. Walking through my code review and seeing my pull request merged into staging was a pivotal moment. It emphasized why semantic layouts and strict guidelines matter."
+        text: "1. I was tasked to cut the slip for their Promo mentioned on day one.<br><br>2. Yestin and I were both assigned to clearing out finished block time"
       },
       {
-        title: "Embracing Team Routines",
-        caption: "Day 3:",
+        title: "Tech Desk Immersion",
+        caption: "Day 3",
         imgs: ["assets/3/IMG_8966.jpg", "assets/3/IMG_8960.jpg", "assets/3/IMG_8979.jpg", "assets/3/IMG_8988.jpg"],
-        text: "We integrated into daily agile check-ins. Keeping updates concise and highlighting blocks helped me understand operational pacing. It developed my ability to communicate roadblocks constructively."
+        text: "Rotated to Technical Department where I enjoyed the teaching of sir Bem about the blocking of the advertisements. It was also my first time facilitating the in ordered structure of the programs."
       },
       {
-        title: "Confronting Code Roadblocks",
-        caption: "Day 4:",
+        title: "Post-Production Immersion",
+        caption: "Day 4",
         imgs: ["assets/4/IMG_9027.jpg", "assets/4/IMG_9046.jpg", "assets/4/Screenshot 2026-08-01 231518.png"],
-        text: "I ran into a persistent, hard-to-trace state bug that disrupted page rendering. Working with documentation, utilizing breakpoint inspection tools, and consulting a senior engineer taught me strategic debugging habits."
+        text: "1. Had a great learning with sir Kurt too!<br><br>2. I partially edited one program of Aksyon Radyo supervised by sir Kurt. It was my first time using Filmora.<br><br>3. Sir Kurt thought me the process of managing the advertisement and program, and how to change different graphics."
       },
       {
-        title: "Mid-Term Self Assessment",
-        caption: "Day 5:",
-        imgs: ["assets/5/IMG_4030.PNG", "assets/5/IMG_9111.jpg", "assets/5/IMG_9118.PNG"],
-        text: "Halfway mark! During evaluation, my supervisors provided valuable tips to improve structural code patterns. This gave me clear indicators for refinement heading into the second half of training."
+        title: "Fieldwork & Production",
+        caption: "Day 5",
+        imgs: ["assets/5/IMG_4030.PNG", "assets/5/IMG_9111.jpg", "assets/5/IMG_9118.jpg"],
+        text: "1. Taken during my first ever standupper at Oton Green Amphitheater, Iloilo.<br><br>2. I was with sir Journey observing the editing of pubmats while on the preview"
       },
       {
-        title: "Implementing Dynamic Integrations",
-        caption: "Day 6: ",
+        title: "First Published News",
+        caption: "Day 6",
         imgs: ["assets/6/IMG_3876.PNG", "assets/6/IMG_3877.PNG", "assets/6/IMG_9404.jpg"],
-        text: "I took on the responsibility of mapping complex database outputs to dynamic frontend views. Handling error limits, async loading frames, and response states pushed me to write clean and defensive scripts."
+        text: "1. My first ever news I wrote and uploaded!<br><br>2. It was also my first time studying the story of Eala in playing Tennis.<br><br>3. This was also me facing difficult terminologies of Hiligaynon."
       },
       {
-        title: "Testing and Quality Assurance",
-        caption: "Day 7: ",
+        title: "Pubmats & High-Impact News",
+        caption: "Day 7",
         imgs: ["assets/7/IMG_9498.jpg", "assets/7/IMG_3869.PNG", "assets/7/IMG_3870.PNG", "assets/7/IMG_3871.PNG", "assets/7/IMG_4032.PNG", "assets/7/IMG_4038.PNG"],
-        text: "Quality control is key. I spent this block designing automated tests to protect our components against regression errors. Realizing how unit tests streamline changes changed how I write code."
+        text: "1. A proof that I am handling pubmats for postings!<br><br>2. Another news posted by me.<br><br>3. I witness how it was pressuring this to me to create news about timely and controversial topic.<br><br>4. Edited and posted again another news and pubmat.<br><br>5. Our very own WVSU Alumna, I created news and it took a lot of comments and reactions"
       },
       {
-        title: "Synergy and Brainstorming",
-        caption: "Day 8: ",
+        title: "Newsroom-Tech Sync",
+        caption: "Day 8",
         imgs: ["assets/8/IMG_9446.jpg", "assets/8/IMG_9451.jpg"],
-        text: "Our team ran a rapid-cycle prototyping session. This project showed me how sharing perspectives and aligning creative ideas early on saves development time and produces a more complete user experience."
+        text: "1. Handled the page and task in reviewing it. I also list down the top stories of the day.<br><br>2. Visited the Technical Department just beside the Newsroom Department for follow ups."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 9: ",
+        title: "Live Broadcast & Breaking News",
+        caption: "Day 9",
         imgs: ["assets/9/IMG_4039.PNG", "assets/9/IMG_3865.PNG", "assets/9/IMG_4040.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Did the live reporting in the program of sir Renan.<br><br>2. Source out informations about the Earthquake at Davao City.<br><br>3. Made news and corrected by the seniors"
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 10: ",
+        title: "'Tingog' Field Shoot",
+        caption: "Day 10",
         imgs: ["assets/10/IMG_4058.PNG", "assets/10/IMG_4056.PNG"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. We had shooted the Tingog Segment at City Proper Iloilo.<br><br>2. Interviewed different people and workers across Iloilo City."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 11: ",
+        title: "Capitol & Crime Coverage",
+        caption: "Day 11",
         imgs: ["assets/11/IMG_4043.PNG", "assets/11/IMG_4045.PNG", "assets/11/IMG_9950.jpg", "assets/11/IMG_9969.jpg", "assets/11/IMG_9954.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Standupper at the Capitol about making Anilao, Pavia as the Sorbete Capital of Iloilo.<br><br>2. A photo during the first reading of pushing Anilao, Pavia to become Sorbete Capital of Iloilo. <br><br>3. Their pride and product.<br><br>4. Another standupper about the tricycle driver found dead at Brgy. Cubay. Jaro, Iloilo.<br><br>5. The home of the tricycle driver"
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 12: ",
+        title: "Rapid Response Reporting",
+        caption: "Day 12",
         imgs: ["assets/12/IMG_0479.jpg", "assets/12/IMG_4046.PNG", "assets/12/IMG_4047.PNG", "assets/12/IMG_0484.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Thought by ma’am Kyla about the structure when asking questions if the topic is about fire.<br><br>2. On the spot assigned to the newsroom due to the urgent out of town. So I made news and posted on the page about Gcash followed by another impeachment topic.<br><br>3. Lastly, this was taken during our Patrol duty with ma’am Kyla."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 13: ",
+        title: "City Patrol & Promo Duty",
+        caption: "Day 13",
         imgs: ["assets/13/IMG_0591.jpg", "assets/13/IMG_4049.PNG", "assets/13/IMG_4050.PNG", "assets/13/IMG_0592.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Getting ready for the patrol duty <br><br>2. Had tiktok dance with my co interns and seniors <br><br>3. Taken during the Roleta Promo <br><br>4. Roam around the city to find news"
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 14: ",
+        title: "Transmission Site Visit",
+        caption: "Day 14",
         imgs: ["assets/14/IMG_0691.jpg", "assets/14/IMG_8509.jpg", "assets/14/IMG_0688.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Visited again the radio transmission site to check it’s power <br><br>2. A photo on the way to the radio transmission site <br><br>3. Had the chance to stop by in the Fort to eat street food."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 15: ",
+        title: "Live Co-Reporting & Incident Duty",
+        caption: "Day 15",
         imgs: ["assets/15/IMG_0836.jpg", "assets/15/IMG_0881.jpg", "assets/15/IMG_0860.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Did the Live Reporting with Aksyon Marvin.<br><br>2. Took documentation to the vehicular incident. <br><br>3. Roam around the city with my co-interns."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 16: ",
+        title: "Live Broadcast & Worldbex Opening",
+        caption: "Day 16",
         imgs: ["assets/16/IMG_2233.jpg", "assets/16/IMG_1135.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Reported live in the afternoon edition program.<br><br>2. Roam around the city while appreciating the city lights. <br><br>3. Worldbex Opening."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 17: ",
+        title: "Live Reporting & Ferry Checks",
+        caption: "Day 17",
         imgs: ["assets/17/IMG_4054.PNG", "assets/17/IMG_4053.PNG", "assets/17/IMG_1216.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Another live reporting on the program of Afternoon edition by Aksyon Renan.<br><br>2. Took photos on the checking of ferry, Iloilo to Guimaras trip.<br><br>3. A peaceful night for commuters and staffs."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 18: ",
+        title: "Latte Art Competition Beat",
+        caption: "Day 18",
         imgs: ["assets/18/IMG_1513.PNG", "assets/18/IMG_1500.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Recorded a standupper about the Hampang Kape: Latte Art Competition (Interschool School Division).<br><br>2. Close up product of their work! <br><br>3. Showcased the creativity and skill of the participants."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 19: ",
+        title: "Material Runs & BBB Commentary",
+        caption: "Day 19",
         imgs: ["assets/19/IMG_1780.jpg", "assets/19/IMG_1777.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. We picked up the materials and roamed around the city. 2. We visited the technical department and listened to Sir Brian's BBB commentary."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 20: ",
+        title: "Kabalaka Expo Prep & Patrol",
+        caption: "Day 20",
         imgs: ["assets/20/IMG_8938.jpg", "assets/20/IMG_1798.jpg", "assets/20/IMG_1848.jpg", "assets/20/IMG_8934.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Visited the Kabalaka Expo Preparations.<br><br>2. Taken before our departure on patrol.<br><br>3. Preparation time. <br><br>4. A selfie with ma’am Farah and my co-interns."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 21: ",
+        title: "Out-of-Town Military Beat Coverage: Field Operations at 3rd Infantry Division Headquarters",
+        caption: "Day 21",
         imgs: ["assets/21/IMG_2195.jpg", "assets/21/IMG_2145.jpg", "assets/21/IMG_2101.jpg", "assets/21/IMG_2215.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. We went to the Municipality of Jamindan HEADQUARTERS 3RD INFANTRY (SPEARHEAD) DIVISION, PA CAMP PERALTA JR, JAMINDAN, CAPIZ."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 22: ",
+        title: "Traffic Incident & Field Interview",
+        caption: "Day 22",
         imgs: ["assets/22/IMG_2372.jpg", "assets/22/IMG_2363.jpg", "assets/22/IMG_2387.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Documented the Vehicular accident of a Small truck and barricade at Quintin Salas.<br><br>2. On our way to the accident.<br><br>3. Went to Calaparan to assist the conduct interview about the budget of a family in a food store."
       },
       {
-        title: "The Project Final Milestone",
-        caption: "Day 23: ",
+        title: "Disaster Resilience, Oil Price Beat, & Kabalaka Expo",
+        caption: "Day 23",
         imgs: ["assets/23/IMG_4057.PNG", "assets/23/IMG_2530.jpg", "assets/23/IMG_2506.jpg"],
-        text: "The final stretch culminated in a team demonstration. Explaining our feature implementations to department managers built up my confidence and wrapped up my OJT journey on an incredibly positive note!"
+        text: "1. Shooted our standupper video about National Disaster Resilience Month.<br><br>2. Did the live report in the commentary under sir Brian’s program about oil price hike.<br><br>3. Observe the activities during the Kabalaka Expo."
       }
     ];
 
-    /* -------------------------------------------------------------
-       2. AMBIENT BACKGROUND & DUST LAYER EFFECT
-       ------------------------------------------------------------- */
+    /* WEB AUDIO SYNTHESIZER FOR CLICK EFFECTS */
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioContext();
+    }
+
+    function playSound(type) {
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, now);
+          osc.frequency.exponentialRampToValueAtTime(900, now + 0.08);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'flip') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(280, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        }
+      } catch (e) { console.log(e); }
+    }
+
+    /* 3D TILT EFFECT ON HERO CARD */
+    const heroCard = document.getElementById('hero-card');
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      const rotX = ((clientY / innerHeight) - 0.5) * -10;
+      const rotY = ((clientX / innerWidth) - 0.5) * 10;
+      heroCard.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    });
+
+    /* SCROLL NAVIGATION & PROGRESS TRACKER */
+    const appContainer = document.getElementById('app-container');
+    const progressBar = document.getElementById('progress-bar');
+
+    appContainer.addEventListener('scroll', () => {
+      const maxScroll = appContainer.scrollWidth - appContainer.clientWidth;
+      const currentScroll = appContainer.scrollLeft;
+      const progress = (currentScroll / maxScroll) * 100;
+      progressBar.style.width = `${progress}%`;
+    });
+
+    function scrollToGallery() {
+      playSound('pop');
+      document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    }
+
+    function scrollToReels() {
+      playSound('pop');
+      document.getElementById('reels').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTop() {
+      playSound('pop');
+      document.getElementById('landing').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* REFLECTIONS MODAL CONTROLS */
+    function openReflectionsModal() {
+      playSound('pop');
+      document.getElementById('reflections-modal').classList.add('active');
+    }
+
+    function closeReflectionsModal() {
+      playSound('pop');
+      document.getElementById('reflections-modal').classList.remove('active');
+    }
+
+    // Convert Vertical Mouse Wheel to Horizontal Gallery Scroll when outside reels
+    window.addEventListener('wheel', (evt) => {
+      if (document.getElementById('lightbox').classList.contains('active') || 
+          document.getElementById('reflections-modal').classList.contains('active')) return;
+
+      const vertStack = document.getElementById('vertical-stack');
+      const vertRect = vertStack.getBoundingClientRect();
+      const isInsideVertStack = vertRect.left >= 0 && vertRect.right <= window.innerWidth;
+
+      if (!isInsideVertStack) {
+        if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
+          evt.preventDefault();
+          appContainer.scrollLeft += evt.deltaY * 1.2;
+        }
+      }
+    }, { passive: false });
+
+    /* AMBIENT PARTICLES */
     const canvas = document.getElementById('dust-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -1169,137 +2093,45 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    class DustParticle {
-      constructor() {
-        this.reset();
-      }
+    class Particle {
+      constructor() { this.reset(); }
       reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height + canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
+        this.size = Math.random() * 1.8 + 0.4;
         this.speedY = -(Math.random() * 0.4 + 0.1);
         this.speedX = Math.random() * 0.4 - 0.2;
-        this.opacity = Math.random() * 0.5 + 0.1;
+        this.opacity = Math.random() * 0.4 + 0.15;
       }
       update() {
         this.y += this.speedY;
         this.x += this.speedX;
-        if (this.y < 0) {
-          this.reset();
-        }
+        if (this.y < 0) this.reset();
       }
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245, 245, 247, ${this.opacity})`;
+        ctx.fillStyle = `rgba(168, 85, 247, ${this.opacity})`;
         ctx.fill();
       }
     }
 
-    for (let i = 0; i < 70; i++) {
-      particles.push(new DustParticle());
-    }
+    for (let i = 0; i < 70; i++) particles.push(new Particle());
 
-    function animateDust() {
+    function animateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      requestAnimationFrame(animateDust);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
     }
-    animateDust();
+    animateParticles();
 
-    // Spawn Blurred Background floating cards
-    const bgContainer = document.getElementById('bg-polaroids');
-    const bgImages = ojtData.map(item => item.imgs[0]);
-
-    for (let i = 0; i < 8; i++) {
-      const card = document.createElement('div');
-      card.className = 'floating-card';
-      card.style.left = `${Math.random() * 90}%`;
-      card.style.top = `${Math.random() * 90}%`;
-      card.style.animationDelay = `${Math.random() * -20}s`;
-      card.style.animationDuration = `${20 + Math.random() * 15}s`;
-      if (bgImages[i % bgImages.length]) {
-        card.style.backgroundImage = `url(${bgImages[i % bgImages.length]})`;
-        card.style.backgroundSize = 'cover';
-        card.style.backgroundPosition = 'center';
-      }
-      bgContainer.appendChild(card);
-    }
-
-    /* -------------------------------------------------------------
-       3. NAVIGATION & CONDITIONAL SCROLL MANAGEMENT
-       ------------------------------------------------------------- */
-    const verticalStack = document.getElementById('vertical-stack');
-    const appContainer = document.getElementById('app-container');
-
-    function scrollToReels() {
-      const reelsSection = document.getElementById('reels');
-      reelsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function scrollToGallery() {
-      const gallery = document.getElementById('gallery');
-      gallery.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-    }
-
-    // Wheel Event Router: Handles smooth mouse scroll and prevents lockups
-    window.addEventListener('wheel', (evt) => {
-      if (document.getElementById('lightbox').classList.contains('active')) return;
-
-      const isInsideDeck = evt.target.closest('#reels-deck');
-      const isOverStack = evt.target.closest('#vertical-stack');
-
-      if (isInsideDeck) {
-        const deck = evt.target.closest('#reels-deck');
-        const isDeckAtBottom = Math.ceil(deck.scrollTop + deck.clientHeight) >= (deck.scrollHeight - 5);
-        const isDeckAtTop = deck.scrollTop === 0;
-
-        if (evt.deltaY > 0 && isDeckAtBottom) {
-          evt.preventDefault();
-        } else if (evt.deltaY < 0 && isDeckAtTop) {
-          verticalStack.scrollTop += evt.deltaY;
-          evt.preventDefault();
-        }
-        return;
-      }
-
-      if (isOverStack) {
-        const isAtLanding = verticalStack.scrollTop < (window.innerHeight * 0.4);
-
-        if (isAtLanding) {
-          if (Math.abs(evt.deltaX) > Math.abs(evt.deltaY)) {
-            appContainer.scrollLeft += evt.deltaX;
-          } else if (evt.deltaY > 0) {
-            verticalStack.scrollTop += evt.deltaY;
-            evt.preventDefault();
-          }
-        } else {
-          if (evt.deltaY < 0) {
-            verticalStack.scrollTop += evt.deltaY;
-            evt.preventDefault();
-          } else {
-            evt.preventDefault();
-          }
-        }
-      } else {
-        if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
-          evt.preventDefault();
-          appContainer.scrollLeft += evt.deltaY;
-        }
-      }
-    }, { passive: false });
-
-    /* -------------------------------------------------------------
-       4. INTERACTIVE PHOTO DETACHING, SLIDESHOW & FLIPPING
-       ------------------------------------------------------------- */
+    /* LIGHTBOX DETACH & FLIP SYSTEM */
     let currentActiveIndex = null;
     let currentImageIndex = 0;
     let clickedContainer = null;
 
     function detachCard(cardElement, index) {
+      playSound('pop');
       clickedContainer = cardElement.closest('.hanging-container');
       currentActiveIndex = index;
       currentImageIndex = 0;
@@ -1316,7 +2148,7 @@
       document.getElementById('zoom-img').src = activeImgUrl;
       document.getElementById('zoom-caption').innerHTML = data.caption;
       document.getElementById('reflection-title').innerText = data.title;
-      document.getElementById('reflection-text').innerText = data.text;
+      document.getElementById('reflection-text').innerHTML = data.text;
 
       const prevBtn = document.getElementById('carousel-prev');
       const nextBtn = document.getElementById('carousel-next');
@@ -1341,6 +2173,7 @@
 
     function changeImage(direction, event) {
       event.stopPropagation();
+      playSound('pop');
       
       const data = ojtData[currentActiveIndex];
       const totalImages = data.imgs.length;
@@ -1356,26 +2189,20 @@
         
         const dots = document.querySelectorAll('.dot');
         dots.forEach((dot, idx) => {
-          if (idx === currentImageIndex) {
-            dot.classList.add('active');
-          } else {
-            dot.classList.remove('active');
-          }
+          dot.classList.toggle('active', idx === currentImageIndex);
         });
       }, 150);
     }
 
     function flipCard(event) {
-      if (
-        event.target.classList.contains('carousel-nav') || 
-        event.target.classList.contains('close-btn')
-      ) return;
-      
+      if (event.target.classList.contains('carousel-nav') || event.target.classList.contains('close-btn')) return;
+      playSound('flip');
       const wrapper = document.getElementById('lightbox-card-wrapper');
       wrapper.classList.toggle('flipped');
     }
 
     function rehangCard() {
+      playSound('pop');
       document.getElementById('lightbox').classList.remove('active');
       
       setTimeout(() => {
